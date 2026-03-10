@@ -32,7 +32,7 @@
 
     <section class="card hud-card">
       <h2>Forge Profile</h2>
-      <p class="muted-text">Enter maxes once. The forge will generate your cycle weights automatically.</p>
+      <p class="muted-text">Enter maxes once. The forge generates weights automatically.</p>
 
       <form id="profile-form">
         <input id="name" type="text" placeholder="Name" />
@@ -46,7 +46,7 @@
         <button type="submit">Forge New Cycle</button>
       </form>
 
-      <p class="muted-text top-gap">Tip: use a training max if you want more consistent progress.</p>
+      <p class="muted-text top-gap">Tip: use a training max if you want consistent progress.</p>
     </section>
   </main>
 
@@ -61,7 +61,10 @@
     <section class="card hud-card">
       <div class="archive-header">
         <h2>Forge HUD</h2>
-        <button type="button" id="btn-edit-profile" class="secondary-btn">Edit Profile</button>
+        <div class="button-row">
+          <button type="button" id="btn-gym-mode" class="secondary-btn">Gym Mode: OFF</button>
+          <button type="button" id="btn-edit-profile" class="secondary-btn">Edit Profile</button>
+        </div>
       </div>
       <div id="forge-hud">
         <p>No cycle forged yet.</p>
@@ -69,14 +72,20 @@
     </section>
 
     <section class="card">
-      <h2>Forge Directive</h2>
+      <div class="archive-header">
+        <h2>Forge Directive</h2>
+        <div class="button-row">
+          <button type="button" id="btn-reset-checks" class="secondary-btn">Reset Checks</button>
+        </div>
+      </div>
+
       <div id="today-workout">
         <p>No directive loaded yet.</p>
       </div>
 
       <div class="button-row top-gap">
-        <button type="button" id="prev-workout" class="secondary-btn">Previous</button>
-        <button type="button" id="next-workout" class="secondary-btn">Next</button>
+        <button type="button" id="prev-workout" class="secondary-btn">Previous Directive</button>
+        <button type="button" id="next-workout" class="secondary-btn">Next Directive</button>
       </div>
     </section>
 
@@ -90,6 +99,7 @@
 
     <section class="card">
       <h2>War Log</h2>
+
       <form id="daily-log-form">
         <input id="log-date" type="date" />
         <input id="log-bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
@@ -97,12 +107,13 @@
         <textarea id="log-notes" placeholder="How did it feel?"></textarea>
         <button type="submit">Save War Log</button>
       </form>
+
       <div id="log-history"></div>
     </section>
 
     <section class="card">
       <h2>Reforging Record (Final Boss)</h2>
-      <p class="muted-text">Save this after Infinity Forge. Top sets become your new numbers.</p>
+      <p class="muted-text">Save after Infinity Forge. Top sets become your new numbers.</p>
 
       <form id="scorecard-form">
         <input id="score-date" type="date" />

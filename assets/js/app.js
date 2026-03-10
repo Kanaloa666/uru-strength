@@ -21,6 +21,7 @@ const toggleArchiveBtn = document.getElementById("toggle-archive")
 const prevWorkoutBtn = document.getElementById("prev-workout")
 const nextWorkoutBtn = document.getElementById("next-workout")
 const btnEditProfile = document.getElementById("btn-edit-profile")
+const resetWorkoutChecksBtn = document.getElementById("reset-workout-checks")
 
 // Logs
 const logHistory = document.getElementById("log-history")
@@ -28,7 +29,9 @@ const scorecardHistory = document.getElementById("scorecard-history")
 
 let archiveExpanded = false
 
-// ---------- Set tracking (checkbox + note per set) ----------
+// ---------------------
+// Set tracking store
+// ---------------------
 function ensureTracking() {
   if (!state.setTracking) state.setTracking = {}
 }
@@ -58,26 +61,42 @@ function clearDirectiveTracking(weekIndex, dayIndex) {
   saveAppData(state)
 }
 
-function attachTrackingListeners() {
-  document.querySelectorAll("[data-track-key]").forEach(el => {
-    el.addEventListener("change", (e) => {
-      const key = e.target.getAttribute("data-track-key")
-      setTracked(key, { checked: !!e.target.checked })
-    })
-  })
+// Quick actions (called from inline buttons)
+window.applyNote = function applyNote(key, text) {
+  const curr = getTracked(key)
+  let note = (curr.note || "").trim()
 
-  document.querySelectorAll("[data-note-key]").forEach(el => {
-    const save = () => {
-      const key = el.getAttribute("data-note-key")
-      const val = (el.value || "").trim()
-      setTracked(key, { note: val })
-      el.classList.toggle("saved-note", !!val)
-    }
-    el.addEventListener("change", save)
-    el.addEventListener("blur", save)
-  })
+  // toggle behavior: if tag exists, remove it; else add it
+  if (note.includes(text)) {
+    note = note.replace(text, "").replace(/\s+/g, " ").trim()
+  } else {
+    note = (note + " " + text).replace(/\s+/g, " ").trim()
+  }
+
+  setTracked(key, { note })
+  renderDirective() // re-render to reflect note + saved styling
 }
 
+window.applyActual = function applyActual(key, reps) {
+  const r = String(reps || "").trim()
+  if (!r) return
+
+  const curr = getTracked(key)
+  let note = (curr.note || "").trim()
+
+  // remove previous "Actual X" if present
+  note = note.replace(/Actual\s+\d+/gi, "").replace(/\s+/g, " ").trim()
+
+  // add new
+  note = (note + ` Actual ${r}`).replace(/\s+/g, " ").trim()
+
+  setTracked(key, { note })
+  renderDirective()
+}
+
+// ---------------------
+// UI helpers
+// ---------------------
 function showScreen(name){
   if (name === "profile"){
     screenProfile.classList.remove("hidden")
@@ -135,6 +154,9 @@ function getCurrent(){
   return { week, day, wi, di }
 }
 
+// ---------------------
+// Forge HUD
+// ---------------------
 function renderForgeHud(){
   if (!forgeHud) return
 
@@ -195,15 +217,33 @@ function renderForgeHud(){
   `
 }
 
-// ---- Render set rows with checkbox + free text note ----
+// ---------------------
+// Directive rendering with tracking UI
+// ---------------------
 function renderSetRow(label, key) {
   const t = getTracked(key)
+
   return `
     <div class="set-row">
       <input class="set-check" type="checkbox" data-track-key="${key}" ${t.checked ? "checked" : ""}/>
       <div class="set-text">${label}</div>
-      <input class="set-note ${t.note ? "saved-note" : ""}" type="text" data-note-key="${key}"
-        value="${t.note || ""}" placeholder="notes / actual reps"/>
+      <div>
+        <input
+          class="set-note ${t.note ? "saved-note" : ""}"
+          type="text"
+          data-note-key="${key}"
+          value="${t.note || ""}"
+          placeholder="notes / actual reps"
+        />
+        <div class="note-chip-row">
+          <button type="button" class="note-chip" onclick="applyNote('${key}','PR')">PR</button>
+          <button type="button" class="note-chip" onclick="applyNote('${key}','RPE9')">RPE9</button>
+          <button type="button" class="note-chip" onclick="applyNote('${key}','FAIL')">FAIL</button>
+          <span class="actual-label">Actual</span>
+          <input class="actual-input" type="number" min="0" placeholder="reps"
+            onchange="applyActual('${key}', this.value)" />
+        </div>
+      </div>
     </div>
   `
 }
@@ -215,7 +255,7 @@ function liftBlockWithTracking(bigLift, wi, di, liftIndex) {
   }).join("")
 
   const sets = (bigLift.sets || []).map((s, idx) => {
-    const label = typeof s.weight === "string"
+    const label = (typeof s.weight === "string")
       ? `${s.weight} x ${s.reps}`
       : `${s.weight} x ${s.reps}`
     return renderSetRow(label, trackKey(wi, di, liftIndex, "work", idx))
@@ -235,6 +275,26 @@ function liftBlockWithTracking(bigLift, wi, di, liftIndex) {
   `
 }
 
+function attachTrackingListeners() {
+  document.querySelectorAll("[data-track-key]").forEach(el => {
+    el.addEventListener("change", (e) => {
+      const key = e.target.getAttribute("data-track-key")
+      setTracked(key, { checked: !!e.target.checked })
+    })
+  })
+
+  document.querySelectorAll("[data-note-key]").forEach(el => {
+    const save = () => {
+      const key = el.getAttribute("data-note-key")
+      const val = (el.value || "").trim()
+      setTracked(key, { note: val })
+      el.classList.toggle("saved-note", !!val)
+    }
+    el.addEventListener("change", save)
+    el.addEventListener("blur", save)
+  })
+}
+
 function renderDirective(){
   if (!todayWorkout) return
 
@@ -246,14 +306,12 @@ function renderDirective(){
 
   const { week, day, wi, di } = current
 
-  // Boss day
   if (day.infinityForge){
     const boss = day.infinityForge
-
     todayWorkout.innerHTML = `
       <h3>Cycle Phase: ${week.name}</h3>
       <p class="muted-text">${week.focus}</p>
-      <div class="boss-warning">FINAL BOSS — log your top sets in Reforging Record.</div>
+      <div class="boss-warning">FINAL BOSS — log top sets in Reforging Record.</div>
 
       <div class="directive-stack">
         ${boss.bigLifts.map((lift, idx) => liftBlockWithTracking(lift, wi, di, idx)).join("")}
@@ -270,12 +328,10 @@ function renderDirective(){
         </div>
       </div>
     `
-
     attachTrackingListeners()
     return
   }
 
-  // Normal day
   todayWorkout.innerHTML = `
     <h3>Cycle Phase: ${week.name}</h3>
     <p><strong>${day.title}</strong></p>
@@ -302,10 +358,12 @@ function renderDirective(){
       </div>
     </div>
   `
-
   attachTrackingListeners()
 }
 
+// ---------------------
+// Archive / Logs / Scorecards
+// ---------------------
 function renderArchive(){
   if (!programOutput) return
 
@@ -377,6 +435,9 @@ function renderAll(){
   renderScorecards()
 }
 
+// ---------------------
+// Navigation
+// ---------------------
 function moveWorkout(dir){
   if (!state.program?.weeks?.length) return
 
@@ -412,7 +473,9 @@ function moveWorkout(dir){
   renderDirective()
 }
 
-// ---------- Events ----------
+// ---------------------
+// Events
+// ---------------------
 profileForm?.addEventListener("submit", (e) => {
   e.preventDefault()
 
@@ -432,8 +495,8 @@ profileForm?.addEventListener("submit", (e) => {
   state.currentWorkout = { weekIndex: 0, dayIndex: 0 }
 
   ensureTracking()
-
   saveAppData(state)
+
   showScreen("dashboard")
   renderAll()
 })
@@ -494,7 +557,7 @@ scorecardForm?.addEventListener("submit", (e) => {
   scorecardForm.reset()
 })
 
-// Reset checks: clears ONLY this directive’s tracking
+// Reset checks clears ONLY current directive
 resetWorkoutChecksBtn?.addEventListener("click", () => {
   const cur = getCurrent()
   if (!cur) return

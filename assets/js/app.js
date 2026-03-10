@@ -132,6 +132,7 @@ function renderInfinityForge(boss) {
     <div class="nested-card">
       <h4>${boss.title}</h4>
       <p class="muted-text">${boss.subtitle}</p>
+      ${boss.flavor ? `<p class="lift-meta"><em>${boss.flavor}</em></p>` : ""}
 
       ${boss.bigLifts.map(renderBigLift).join("")}
 
@@ -154,6 +155,7 @@ function renderInfinityForgeTracked(boss, weekIndex, dayIndex) {
     <div class="nested-card">
       <h4>${boss.title}</h4>
       <p class="muted-text">${boss.subtitle}</p>
+      ${boss.flavor ? `<p class="lift-meta"><em>${boss.flavor}</em></p>` : ""}
 
       ${boss.bigLifts.map((bigLift, liftIndex) => renderBigLiftTracked(bigLift, weekIndex, dayIndex, liftIndex, "today")).join("")}
 
@@ -184,6 +186,7 @@ function renderDay(day) {
   return `
     <div class="nested-card">
       <h4>${day.title}</h4>
+      ${day.flavor ? `<p class="lift-meta"><em>${day.flavor}</em></p>` : ""}
 
       ${day.bigLifts.map(renderBigLift).join("")}
 
@@ -219,7 +222,7 @@ function renderWeek(week) {
 
 function renderProgram() {
   if (!state.program || !state.program.weeks) {
-    programOutput.innerHTML = "<p>No cycle generated yet.</p>";
+    programOutput.innerHTML = "<p>No cycle forged yet.</p>";
     return;
   }
 
@@ -231,7 +234,7 @@ function renderProgram() {
 
 function renderTodayWorkout() {
   if (!state.program || !state.program.weeks || !todayWorkout) {
-    if (todayWorkout) todayWorkout.innerHTML = "<p>No workout selected yet.</p>";
+    if (todayWorkout) todayWorkout.innerHTML = "<p>No directive loaded yet.</p>";
     return;
   }
 
@@ -241,14 +244,15 @@ function renderTodayWorkout() {
   const day = week?.days[dayIndex];
 
   if (!week || !day) {
-    todayWorkout.innerHTML = "<p>No workout selected yet.</p>";
+    todayWorkout.innerHTML = "<p>No directive loaded yet.</p>";
     return;
   }
 
   if (day.infinityForge) {
     todayWorkout.innerHTML = `
-      <h3 class="today-title">Week ${week.number} — ${week.name}</h3>
+      <h3 class="today-title">Cycle Phase: ${week.name}</h3>
       <p class="today-subtitle"><strong>${day.title}</strong></p>
+      <p class="lift-meta"><em>${week.focus}</em></p>
       ${renderInfinityForgeTracked(day.infinityForge, weekIndex, dayIndex)}
     `;
     attachTrackingListeners();
@@ -256,8 +260,9 @@ function renderTodayWorkout() {
   }
 
   todayWorkout.innerHTML = `
-    <h3 class="today-title">Week ${week.number} — ${week.name}</h3>
+    <h3 class="today-title">Cycle Phase: ${week.name}</h3>
     <p class="today-subtitle"><strong>${day.title}</strong></p>
+    <p class="lift-meta"><em>${day.flavor || week.focus}</em></p>
 
     ${day.bigLifts.map((bigLift, liftIndex) =>
       renderBigLiftTracked(bigLift, weekIndex, dayIndex, liftIndex, "today")
@@ -309,7 +314,7 @@ function attachTrackingListeners() {
 
 function renderLogs() {
   if (!state.logs.length) {
-    logHistory.innerHTML = "<p>No logs yet.</p>";
+    logHistory.innerHTML = "<p>No war logs yet.</p>";
     return;
   }
 
@@ -328,7 +333,7 @@ function renderLogs() {
 
 function renderScorecards() {
   if (!state.scorecards.length) {
-    scorecardHistory.innerHTML = "<p>No scorecards yet.</p>";
+    scorecardHistory.innerHTML = "<p>No reforging records yet.</p>";
     return;
   }
 

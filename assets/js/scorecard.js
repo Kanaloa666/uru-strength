@@ -10,3 +10,16 @@ function createScorecardEntry(values) {
     notes: values.notes || ""
   };
 }
+
+function applyNewMaxesFromScorecard(state, card) {
+  if (!state.profile || !state.profile.maxes) return;
+
+  if (card.benchTop > 0) {
+    state.profile.maxes.bench = card.benchTop;
+  }
+
+  if (card.sgdlTop > 0) {
+    state.profile.maxes.sgdl = card.sgdlTop;
+    state.profile.maxes.deadlift = card.sgdlTop;
+  }
+}

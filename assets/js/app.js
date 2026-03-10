@@ -7,56 +7,13 @@ const programOutput = document.getElementById("program-output");
 const logHistory = document.getElementById("log-history");
 const scorecardHistory = document.getElementById("scorecard-history");
 
-function renderProgram() {
-  if (!state.program || !state.program.weeks) {
-    programOutput.innerHTML = "<p>No cycle generated yet.</p>";
-    return;
-  }
-
-  programOutput.innerHTML = `
-    <h3>${state.program.cycleName}</h3>
-    ${state.program.weeks.map(renderWeekCard).join("")}
-  `;
+function renderWarmup(warmup) {
+  if (warmup.label) return `${warmup.label} x ${warmup.reps}`;
+  return `${warmup.weight} x ${warmup.reps}`;
 }
 
-function renderWeekCard(week) {
-  return `
-    <div class="card">
-      <h3>Week ${week.number} — ${week.name}</h3>
-      <p>${week.focus}</p>
-      ${week.days.map(renderDayCard).join("")}
-    </div>
-  `;
-}
-
-function renderDayCard(day) {
-  if (day.infinityForge) {
-    return renderInfinityForge(day.infinityForge);
-  }
-
-  return `
-    <div class="card">
-      <h4>${day.title}</h4>
-      ${day.bigLifts.map(renderBigLift).join("")}
-
-      <div style="margin-top:10px;">
-        <strong>Forge Movement:</strong><br>
-        ${day.forgeMovement.name} — ${day.forgeMovement.prescription}<br>
-        <em>${day.forgeMovement.notes || ""}</em>
-      </div>
-
-      <div style="margin-top:10px;">
-        <strong>${day.thrusterLadder.name}:</strong><br>
-        ${day.thrusterLadder.reps.join(" / ")}<br>
-        <em>${day.thrusterLadder.notes || ""}</em>
-      </div>
-
-      <div style="margin-top:10px;">
-        <strong>Optional:</strong><br>
-        ${day.optional.name} — ${day.optional.prescription}
-      </div>
-    </div>
-  `;
+function renderSet(set) {
+  return `${set.weight} x ${set.reps} (${Math.round(set.pct * 1000) / 10}%)`;
 }
 
 function renderBigLift(bigLift) {
@@ -64,14 +21,11 @@ function renderBigLift(bigLift) {
     <div style="margin-bottom:16px;">
       <strong>${bigLift.lift}</strong><br>
       <span>Based on max: ${bigLift.basedOnMax} lb</span><br>
-      ${bigLift.tempo ? `<span><em>${bigLift.tempo}</em></span><br>` : ""}
-      ${bigLift.pause ? `<span><em>${bigLift.pause}</em></span><br>` : ""}
-
+      ${bigLift.notes ? `<em>${bigLift.notes}</em><br>` : ""}
       <div style="margin-top:8px;">
         <strong>Warmups</strong><br>
         ${bigLift.warmups.map(renderWarmup).join("<br>")}
       </div>
-
       <div style="margin-top:8px;">
         <strong>Work Sets</strong><br>
         ${bigLift.sets.map(renderSet).join("<br>")}
@@ -80,41 +34,54 @@ function renderBigLift(bigLift) {
   `;
 }
 
-function renderWarmup(warmup) {
-  if (warmup.label) {
-    return `${warmup.label} x ${warmup.reps}`;
+function renderDay(day) {
+  if (day.infinityForge) {
+    return `
+      <div class="card">
+        <h4>${day.title}</h4>
+        <p>Final Boss scorecard day.</p>
+        <p>Bench: 65%x5, 75%x3, 85%x2, 90%x1</p>
+        <p>SGDL: 65%x5, 75%x3, 85%x2</p>
+        <p>Landmine Thruster Ladder: 2 / 4 / 6 / 8 / 10 / 12</p>
+      </div>
+    `;
   }
-  return `${warmup.weight} x ${warmup.reps}`;
-}
 
-function renderSet(set) {
-  return `${set.weight} x ${set.reps} <span style="color:#9fb0cf;">(${Math.round(set.pct * 1000) / 10}%)</span>`;
-}
-
-function renderInfinityForge(boss) {
   return `
     <div class="card">
-      <h4>${boss.title}</h4>
-      <p>${boss.subtitle}</p>
-
-      ${boss.bigLifts.map(renderBigLift).join("")}
-
-      <div style="margin-top:10px;">
+      <h4>${day.title}</h4>
+      ${day.bigLifts.map(renderBigLift).join("")}
+      <div>
         <strong>Forge Movement:</strong><br>
-        ${boss.forgeMovement.name} — ${boss.forgeMovement.prescription}<br>
-        <em>${boss.forgeMovement.notes || ""}</em>
+        ${day.forgeMovement.name} — ${day.forgeMovement.prescription}
       </div>
-
-      <div style="margin-top:10px;">
-        <strong>Titan Circuit</strong><br>
-        ${boss.titanCircuit.map(item => `${item.name} — ${item.prescription}`).join("<br>")}
-      </div>
-
-      <div style="margin-top:10px;">
-        <strong>Scorecard Fields</strong><br>
-        ${boss.scorecardFields.join("<br>")}
+      <div style="margin-top:8px;">
+        <strong>${day.thrusterLadder.name}:</strong><br>
+        ${day.thrusterLadder.reps.join(" / ")}
       </div>
     </div>
+  `;
+}
+
+function renderWeek(week) {
+  return `
+    <div class="card">
+      <h3>Week ${week.number} — ${week.name}</h3>
+      <p>${week.focus}</p>
+      ${week.days.map(renderDay).join("")}
+    </div>
+  `;
+}
+
+function renderProgram() {
+  if (!state.program || !state.program.weeks) {
+    programOutput.innerHTML = "<p>No cycle generated yet.</p>";
+    return;
+  }
+
+  programOutput.innerHTML = `
+    <h3>${state.program.cycleName}</h3>
+    ${state.program.weeks.map(renderWeek).join("")}
   `;
 }
 

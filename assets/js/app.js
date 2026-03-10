@@ -10,6 +10,9 @@ const todayWorkout = document.getElementById("today-workout");
 const prevWorkoutBtn = document.getElementById("prev-workout");
 const nextWorkoutBtn = document.getElementById("next-workout");
 const resetWorkoutChecksBtn = document.getElementById("reset-workout-checks");
+const returnToStartBtn = document.getElementById("return-to-start");
+const loadingLine = document.getElementById("loading-line");
+const loadingBar = document.getElementById("loading-bar");
 
 function getTrackingKey(section, weekIndex, dayIndex, liftIndex, setType, setIndex) {
   return `${section}|w${weekIndex}|d${dayIndex}|l${liftIndex}|${setType}|s${setIndex}`;
@@ -51,6 +54,12 @@ function clearCurrentWorkoutTracking() {
   });
 
   saveAppData(state);
+}
+
+function resetToFirstDirective() {
+  state.currentWorkout = { weekIndex: 0, dayIndex: 0 };
+  saveAppData(state);
+  renderTodayWorkout();
 }
 
 function renderTrackedSetLine(label, key) {
@@ -389,6 +398,41 @@ function moveWorkout(direction) {
   renderTodayWorkout();
 }
 
+function runLoadingSequence() {
+  const lines = [
+    "Initializing forge...",
+    "Binding Uru protocols...",
+    "Calibrating directive archive...",
+    "Tempering the next cycle...",
+    "Forge online."
+  ];
+
+  let step = 0;
+  if (loadingLine) loadingLine.textContent = lines[0];
+  if (loadingBar) loadingBar.style.width = "12%";
+
+  const interval = setInterval(() => {
+    step += 1;
+    if (loadingLine && lines[step]) {
+      loadingLine.textContent = lines[step];
+    }
+
+    if (loadingBar) {
+      const progressMap = ["12%", "32%", "56%", "78%", "100%"];
+      loadingBar.style.width = progressMap[Math.min(step, progressMap.length - 1)];
+    }
+
+    if (step >= lines.length - 1) {
+      clearInterval(interval);
+    }
+  }, 350);
+
+  setTimeout(() => {
+    const loading = document.getElementById("loading-screen");
+    if (loading) loading.style.display = "none";
+  }, 1900);
+}
+
 profileForm?.addEventListener("submit", (event) => {
   event.preventDefault();
 
@@ -466,11 +510,11 @@ resetWorkoutChecksBtn?.addEventListener("click", () => {
   renderTodayWorkout();
 });
 
-setTimeout(() => {
-  const loading = document.getElementById("loading-screen");
-  if (loading) loading.style.display = "none";
-}, 1200);
+returnToStartBtn?.addEventListener("click", () => {
+  resetToFirstDirective();
+});
 
+runLoadingSequence();
 renderProgram();
 renderTodayWorkout();
 renderLogs();

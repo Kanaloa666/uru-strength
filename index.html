@@ -6,7 +6,7 @@
     name="viewport"
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   />
-  <title>Villain Arc Training Engine</title>
+  <title>Guardians Directive Engine</title>
   <meta name="theme-color" content="#090b10" />
   <style>
     :root {
@@ -15,24 +15,18 @@
       --panel: rgba(17, 22, 34, 0.92);
       --panel-2: rgba(10, 14, 22, 0.96);
       --line: rgba(166, 72, 255, 0.22);
-      --line-2: rgba(122, 230, 255, 0.16);
       --text: #edf1ff;
       --muted: #a7b1ca;
       --accent: #b05cff;
       --accent-2: #7ae6ff;
       --accent-3: #ff6b9d;
-      --good: #8cffb0;
-      --warn: #ffd166;
       --danger: #ff7676;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
       --radius: 22px;
-      --radius-sm: 14px;
       --maxw: 1180px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html,
     body {
@@ -46,9 +40,7 @@
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    body {
-      min-height: 100vh;
-    }
+    body { min-height: 100vh; }
 
     button,
     input,
@@ -57,9 +49,7 @@
       font: inherit;
     }
 
-    button {
-      cursor: pointer;
-    }
+    button { cursor: pointer; }
 
     .app-shell {
       width: 100%;
@@ -92,12 +82,10 @@
       color: var(--accent-2);
     }
 
-    .muted {
-      color: var(--muted);
-    }
+    .muted { color: var(--muted); }
 
     .panel {
-      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      background: linear-gradient(180deg, var(--panel), rgba(10, 14, 22, 0.96));
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
@@ -146,7 +134,6 @@
       font-weight: 800;
     }
 
-    /* loading */
     .loading-wrap {
       min-height: calc(100vh - 28px);
       display: grid;
@@ -233,7 +220,6 @@
       font-size: 0.94rem;
     }
 
-    /* profile */
     .profile-panel {
       max-width: 860px;
       margin-top: 24px;
@@ -244,14 +230,11 @@
     .topbar h1,
     .sheet-header h2,
     .card h3,
-    .archive-block h3,
-    .profile-panel h2 {
+    .archive-block h3 {
       margin: 0;
     }
 
-    .panel-header {
-      margin-bottom: 18px;
-    }
+    .panel-header { margin-bottom: 18px; }
 
     .form-grid {
       display: grid;
@@ -288,9 +271,7 @@
       border-color: rgba(122, 230, 255, 0.48);
     }
 
-    .field-full {
-      grid-column: 1 / -1;
-    }
+    .field-full { grid-column: 1 / -1; }
 
     .actions {
       display: flex;
@@ -298,7 +279,6 @@
       margin-top: 6px;
     }
 
-    /* hud */
     .topbar {
       display: flex;
       justify-content: space-between;
@@ -389,13 +369,9 @@
       background: linear-gradient(180deg, rgba(255, 107, 157, 0.05), rgba(255,255,255,0.02));
     }
 
-    .sheet-header p {
-      margin: 8px 0 0;
-    }
+    .sheet-header p { margin: 8px 0 0; }
 
-    .table-wrap {
-      overflow-x: auto;
-    }
+    .table-wrap { overflow-x: auto; }
 
     .paper-table {
       width: 100%;
@@ -445,9 +421,7 @@
       border-color: rgba(122, 230, 255, 0.38);
     }
 
-    .card {
-      padding: 16px;
-    }
+    .card { padding: 16px; }
 
     .stack {
       display: grid;
@@ -507,12 +481,6 @@
       margin-top: 10px;
       border-top: 1px solid rgba(176, 92, 255, 0.12);
       padding-top: 16px;
-    }
-
-    .status-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
     }
 
     .mini-note {
@@ -638,7 +606,6 @@
       }
 
       .form-grid,
-      .status-row,
       .remax-row {
         grid-template-columns: 1fr;
       }
@@ -674,8 +641,8 @@
         </div>
 
         <div class="loading-copy">
-          <p class="eyebrow">VILLAIN ARC ENGINE</p>
-          <h1>Summoning the Month Arc</h1>
+          <p class="eyebrow">GUARDIANS DIRECTIVE ENGINE</p>
+          <h1>Booting the Guardians Directive</h1>
           <p class="muted">Sharpening directives. Tempering strength. Preparing your next campaign.</p>
         </div>
 
@@ -704,7 +671,7 @@
 
           <label class="field">
             <span>Arc Label</span>
-            <input id="cycleName" type="text" placeholder="Month 01 // Villain Campaign" />
+            <input id="cycleName" type="text" placeholder="Month 01 // Guardians Campaign" />
           </label>
 
           <label class="field">
@@ -733,7 +700,7 @@
           </label>
 
           <div class="actions field-full">
-            <button class="btn btn-primary" type="submit">Enter Campaign</button>
+            <button id="enter-campaign-btn" class="btn btn-primary" type="submit">Enter Campaign</button>
           </div>
         </form>
       </div>
@@ -742,7 +709,7 @@
     <section id="hud-screen" class="screen">
       <header class="topbar">
         <div>
-          <p class="eyebrow">VILLAIN COMMAND</p>
+          <p class="eyebrow">GUARDIANS COMMAND</p>
           <h1 id="hud-title">Welcome back, Operator</h1>
         </div>
 
@@ -921,7 +888,7 @@
         </section>
 
         <p class="footline">
-          Villain theme active. Mobile-safe. End Week 4, re-max, then the engine rolls into a new month arc automatically.
+          Mobile-safe. End Week 4, re-max, then the engine rolls into a new month arc automatically.
         </p>
       </main>
     </section>
@@ -929,7 +896,7 @@
 
   <script>
     (() => {
-      const STORAGE_KEY = "villain_arc_engine_v1";
+      const STORAGE_KEY = "guardians_directive_engine_v2";
 
       const arcPool = [
         "Doom Directive",
@@ -938,10 +905,10 @@
         "Colossus Imperative",
         "High Evolutionary Design",
         "Omega Annihilation",
-        "Stark Systems Breach",
         "Celestial Engine",
         "Titan Conditioning Matrix",
-        "Vibranium Ascension"
+        "Vibranium Ascension",
+        "Annihilation Signal"
       ];
 
       const phaseMap = {
@@ -958,7 +925,7 @@
         arcName: "Doom Directive",
         profile: {
           name: "",
-          cycleName: "Month 01 // Villain Campaign",
+          cycleName: "Month 01 // Guardians Campaign",
           benchMax: 225,
           squatMax: 315,
           deadliftMax: 285,
@@ -1021,15 +988,13 @@
         return arcPool[(month - 1) % arcPool.length];
       }
 
-      function showScreen(screenName) {
-        Object.values(screens).forEach((screen) => {
-          if (screen) screen.classList.remove("active");
-        });
-        if (screens[screenName]) screens[screenName].classList.add("active");
-      }
-
-      function hasProfile() {
-        return Boolean(appData.profile?.name?.trim());
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
       }
 
       function weekPrescription(week) {
@@ -1042,7 +1007,6 @@
             core: "3 x 10-12 / 30-40 sec"
           };
         }
-
         if (week === 2) {
           return {
             primaryA: "5-4-3-4-5",
@@ -1052,7 +1016,6 @@
             core: "3 x 8-10 / 30-40 sec"
           };
         }
-
         if (week === 3) {
           return {
             primaryA: "4 x 8",
@@ -1062,7 +1025,6 @@
             core: "3 x 8-10 / 35-45 sec"
           };
         }
-
         return {
           primaryA: "3 x 12",
           primaryB: "3 x 12",
@@ -1072,32 +1034,28 @@
         };
       }
 
-      function weekLoad(type, max, week) {
+      function weekLoad(type, max) {
         if (type === "week2wave") {
           return `${pct(max, 0.70)} / ${pct(max, 0.75)} / ${pct(max, 0.80)} / ${pct(max, 0.75)} / ${pct(max, 0.70)}`;
         }
-
         if (type === "week1heavy") return pct(max, 0.72);
         if (type === "week1secondary") return pct(max, 0.68);
-
         if (type === "week3heavy") return pct(max, 0.68);
         if (type === "week3secondary") return pct(max, 0.65);
-
         if (type === "week4heavy") return pct(max, 0.55);
         if (type === "week4secondary") return pct(max, 0.50);
-
         return pct(max, 0.7);
       }
 
       function buildWeekPlan(profile, week) {
         const bench = Number(profile.benchMax) || 225;
         const squat = Number(profile.squatMax) || 315;
-        const deadlift = Number(profile.deadliftMax) || 285;
+        const dead = Number(profile.deadliftMax) || 285;
         const landmine = Number(profile.landmineBase) || 45;
         const kb = Number(profile.kettlebellBase) || 35;
         const s = weekPrescription(week);
 
-        const week1 = [
+        return [
           {
             name: "Doom Speaks",
             subtitle: "Failure requires permission. Today you are not granting it.",
@@ -1111,13 +1069,13 @@
             focus: [
               "Press with control, not panic.",
               "Pull with upper-back tension.",
-              "Meadows row should be strict and ugly in the right way.",
-              "Core stays anti-rotation, not ab circus."
+              "Meadows row stays strict.",
+              "Core is anti-rotation, not ab circus."
             ],
             lifts: [
-              { name: "Bench Press", charge: s.primaryA, weight: week === 2 ? weekLoad("week2wave", bench, week) : week === 3 ? weekLoad("week3heavy", bench, week) : week === 4 ? weekLoad("week4heavy", bench, week) : weekLoad("week1heavy", bench, week), notes: "Main press. Own the groove." },
-              { name: "Snatch-Grip Deadlift", charge: s.primaryB, weight: week === 2 ? weekLoad("week2wave", dead, week) : week === 3 ? weekLoad("week3secondary", dead, week) : week === 4 ? weekLoad("week4secondary", dead, week) : weekLoad("week1secondary", dead, week), notes: "Huge upper back. No soft setup." },
-              { name: "Landmine Meadows Row", charge: s.accessory, weight: round5(landmine + (week === 1 ? 30 : week === 2 ? 35 : week === 3 ? 40 : 15)), notes: "Drive through elbow. No torso slop." },
+              { name: "Bench Press", charge: s.primaryA, weight: week === 2 ? weekLoad("week2wave", bench) : week === 3 ? weekLoad("week3heavy", bench) : week === 4 ? weekLoad("week4heavy", bench) : weekLoad("week1heavy", bench), notes: "Main press. Own the groove." },
+              { name: "Snatch-Grip Deadlift", charge: s.primaryB, weight: week === 2 ? weekLoad("week2wave", dead) : week === 3 ? weekLoad("week3secondary", dead) : week === 4 ? weekLoad("week4secondary", dead) : weekLoad("week1secondary", dead), notes: "Huge upper back. No soft setup." },
+              { name: "Landmine Meadows Row", charge: s.accessory, weight: round5(landmine + (week === 1 ? 30 : week === 2 ? 35 : week === 3 ? 40 : 15)), notes: "Drive through elbow." },
               { name: "Bulgarian Split Squat", charge: week === 4 ? "3 x 10 each" : "3-4 x 8-10 each", weight: "Bodyweight / DB", notes: "Own balance and depth." },
               { name: "Kettlebell Swing", charge: s.kb, weight: round5(kb + (week >= 3 ? 10 : week === 2 ? 5 : 0)), notes: "Snap hips. Stay crisp." },
               { name: "Pallof Press", charge: s.core, weight: "Band / Cable", notes: "Anti-rotation. Ribs down." }
@@ -1136,12 +1094,12 @@
             focus: [
               "Stack the squat.",
               "Bench with leg drive and discipline.",
-              "Landmine lunge should feel athletic, not floppy.",
+              "Landmine lunge should feel athletic.",
               "Carries are anti-lateral-flexion work disguised as suffering."
             ],
             lifts: [
-              { name: "Back Squat", charge: s.primaryA, weight: week === 2 ? weekLoad("week2wave", squat, week) : week === 3 ? weekLoad("week3heavy", squat, week) : week === 4 ? weekLoad("week4heavy", squat, week) : weekLoad("week1heavy", squat, week), notes: "Depth and brace." },
-              { name: "Bench Press", charge: week === 1 ? "4 x 6" : week === 2 ? s.primaryB : week === 3 ? s.primaryB : s.primaryB, weight: week === 2 ? weekLoad("week2wave", bench, week) : week === 3 ? weekLoad("week3secondary", bench, week) : week === 4 ? weekLoad("week4secondary", bench, week) : pct(bench, 0.75), notes: "Repeatable press quality." },
+              { name: "Back Squat", charge: s.primaryA, weight: week === 2 ? weekLoad("week2wave", squat) : week === 3 ? weekLoad("week3heavy", squat) : week === 4 ? weekLoad("week4heavy", squat) : weekLoad("week1heavy", squat), notes: "Depth and brace." },
+              { name: "Bench Press", charge: week === 1 ? "4 x 6" : s.primaryB, weight: week === 2 ? weekLoad("week2wave", bench) : week === 3 ? weekLoad("week3secondary", bench) : week === 4 ? weekLoad("week4secondary", bench) : pct(bench, 0.75), notes: "Repeatable press quality." },
               { name: "Landmine Lunges", charge: week === 4 ? "3 x 10 each" : "4 x 8 each", weight: round5(landmine + (week === 1 ? 20 : week === 2 ? 25 : week === 3 ? 30 : 10)), notes: "Athletic unilateral strength." },
               { name: "Romanian Deadlift", charge: week === 4 ? "3 x 10" : "3 x 8-10", weight: week === 1 ? pct(dead, 0.50) : week === 2 ? pct(dead, 0.55) : week === 3 ? pct(dead, 0.60) : pct(dead, 0.45), notes: "Lengthen hamstrings. Stay braced." },
               { name: "Kettlebell Front Rack Carry", charge: s.core, weight: round5(kb + (week >= 3 ? 10 : 5)), notes: "Anti-lateral flexion. Tall and locked in." },
@@ -1165,8 +1123,8 @@
               "Core stays about bracing, not crunching."
             ],
             lifts: [
-              { name: "Deadlift", charge: s.primaryA, weight: week === 2 ? weekLoad("week2wave", dead, week) : week === 3 ? weekLoad("week3heavy", dead, week) : week === 4 ? weekLoad("week4heavy", dead, week) : weekLoad("week1heavy", dead, week), notes: "Conventional pull. Clean violence." },
-              { name: "Back Squat", charge: week === 1 ? "4 x 6" : week === 2 ? s.primaryB : week === 3 ? s.primaryB : s.primaryB, weight: week === 2 ? weekLoad("week2wave", squat, week) : week === 3 ? weekLoad("week3secondary", squat, week) : week === 4 ? weekLoad("week4secondary", squat, week) : pct(squat, 0.70), notes: "Stay stacked. No divebombing." },
+              { name: "Deadlift", charge: s.primaryA, weight: week === 2 ? weekLoad("week2wave", dead) : week === 3 ? weekLoad("week3heavy", dead) : week === 4 ? weekLoad("week4heavy", dead) : weekLoad("week1heavy", dead), notes: "Conventional pull. Clean violence." },
+              { name: "Back Squat", charge: week === 1 ? "4 x 6" : s.primaryB, weight: week === 2 ? weekLoad("week2wave", squat) : week === 3 ? weekLoad("week3secondary", squat) : week === 4 ? weekLoad("week4secondary", squat) : pct(squat, 0.70), notes: "Stay stacked. No divebombing." },
               { name: "Half-Kneeling Landmine Thruster", charge: week === 4 ? "3 x 10 each" : "4 x 8 each", weight: round5(landmine + (week === 1 ? 15 : week === 2 ? 20 : week === 3 ? 25 : 10)), notes: "Press and brace together." },
               { name: "Bulgarian Split Squat", charge: week === 4 ? "3 x 10 each" : "3-4 x 8 each", weight: "Bodyweight / DB", notes: "Control depth and pelvis." },
               { name: "Kettlebell Goblet Squat", charge: s.kb, weight: round5(kb + (week >= 3 ? 10 : 0)), notes: "Stay upright and brutal." },
@@ -1174,12 +1132,10 @@
             ]
           }
         ];
-
-        return week1;
       }
 
-      function getDirectiveKey(week, workoutIndex, liftIndex) {
-        return `w${week}-d${workoutIndex}-l${liftIndex}-m${appData.month}`;
+      function getDirectiveKey(week, workoutIndex, liftIndex, month) {
+        return `w${week}-d${workoutIndex}-l${liftIndex}-m${month}`;
       }
 
       function applyAutoProgressionFromEntry(liftName, value) {
@@ -1187,7 +1143,6 @@
         const text = value.toLowerCase();
         const strong = ["easy", "smooth", "owned", "all sets", "all reps", "strong"].some(word => text.includes(word));
         const poor = ["miss", "failed", "ugly", "pain", "grind", "cut"].some(word => text.includes(word));
-
         const lift = liftName.toLowerCase();
 
         if (strong) {
@@ -1269,6 +1224,17 @@
       let appData = getData();
       if (!appData.arcName) appData.arcName = pickArcName(appData.month);
 
+      function showScreen(screenName) {
+        Object.values(screens).forEach((screen) => {
+          if (screen) screen.classList.remove("active");
+        });
+        if (screens[screenName]) screens[screenName].classList.add("active");
+      }
+
+      function hasProfile() {
+        return Boolean(appData.profile?.name?.trim());
+      }
+
       function fillProfileForm() {
         const p = appData.profile;
         els.name.value = p.name || "";
@@ -1282,13 +1248,15 @@
 
       function saveProfileFromForm() {
         appData.profile = {
-          name: els.name.value.trim(),
-          cycleName: els.cycleName.value.trim() || `Month ${String(appData.month).padStart(2, "0")} // Villain Campaign`,
-          benchMax: Number(els.benchMax.value) || 225,
-          squatMax: Number(els.squatMax.value) || 315,
-          deadliftMax: Number(els.deadliftMax.value) || 285,
-          landmineBase: Number(els.landmineBase.value) || 45,
-          kettlebellBase: Number(els.kettlebellBase.value) || 35
+          name: els.name ? els.name.value.trim() : "",
+          cycleName: els.cycleName && els.cycleName.value.trim()
+            ? els.cycleName.value.trim()
+            : `Month ${String(appData.month).padStart(2, "0")} // ${appData.arcName}`,
+          benchMax: els.benchMax ? Number(els.benchMax.value) || 225 : 225,
+          squatMax: els.squatMax ? Number(els.squatMax.value) || 315 : 315,
+          deadliftMax: els.deadliftMax ? Number(els.deadliftMax.value) || 285 : 285,
+          landmineBase: els.landmineBase ? Number(els.landmineBase.value) || 45 : 45,
+          kettlebellBase: els.kettlebellBase ? Number(els.kettlebellBase.value) || 35 : 35
         };
         saveData(appData);
       }
@@ -1359,14 +1327,12 @@
 
         els.paperTableBody.innerHTML = "";
         directive.lifts.forEach((lift, liftIndex) => {
-          const key = getDirectiveKey(appData.week, appData.workoutIndex, liftIndex);
+          const key = getDirectiveKey(appData.week, appData.workoutIndex, liftIndex, appData.month);
           const currentActual = appData.actualEntries[key] || "";
 
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>
-              <div class="lift-name">${lift.name}</div>
-            </td>
+            <td><div class="lift-name">${lift.name}</div></td>
             <td>${lift.charge}</td>
             <td>${lift.weight}</td>
             <td>
@@ -1374,7 +1340,7 @@
                 class="actual-input"
                 type="text"
                 value="${escapeHtml(currentActual)}"
-                placeholder="ex: hit all sets easy / missed last set / 225 x5 x5 x5 x5"
+                placeholder="ex: hit all sets easy / missed last set / 225 x5 x5 x5"
               />
             </td>
             <td class="lift-sub">${lift.notes}</td>
@@ -1518,22 +1484,28 @@
         setTimeout(step, 240);
       }
 
-      function escapeHtml(value) {
-        return String(value)
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
       els.profileForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        if (!els.name.value.trim()) {
-          alert("Put your name in so the engine knows who it is yelling at.");
+
+        const enteredName = els.name ? els.name.value.trim() : "";
+        if (!enteredName) {
+          alert("Enter your operator name first.");
           return;
         }
-        saveProfileFromForm();
+
+        appData.profile = {
+          name: enteredName,
+          cycleName: els.cycleName && els.cycleName.value.trim()
+            ? els.cycleName.value.trim()
+            : `Month ${String(appData.month).padStart(2, "0")} // ${appData.arcName}`,
+          benchMax: els.benchMax ? Number(els.benchMax.value) || 225 : 225,
+          squatMax: els.squatMax ? Number(els.squatMax.value) || 315 : 315,
+          deadliftMax: els.deadliftMax ? Number(els.deadliftMax.value) || 285 : 285,
+          landmineBase: els.landmineBase ? Number(els.landmineBase.value) || 45 : 45,
+          kettlebellBase: els.kettlebellBase ? Number(els.kettlebellBase.value) || 35 : 35
+        };
+
+        saveData(appData);
         renderHud();
         showScreen("hud");
       });

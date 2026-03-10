@@ -6,22 +6,22 @@
     name="viewport"
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   />
-  <title>Guardians Directive Engine — Build 2</title>
-  <meta name="theme-color" content="#090b10" />
+  <title>Omega Forge — V3</title>
+  <meta name="theme-color" content="#120606" />
   <style>
     :root {
-      --bg: #070a10;
-      --bg2: #111827;
-      --panel: rgba(14, 18, 28, 0.92);
-      --panel-2: rgba(10, 14, 22, 0.98);
-      --line: rgba(114, 217, 255, 0.14);
-      --line-2: rgba(177, 92, 255, 0.18);
-      --text: #eef3ff;
-      --muted: #9aa9c5;
-      --accent: #6bdcff;
-      --accent-2: #b05cff;
-      --accent-3: #ff6ea9;
-      --success: #8cffb0;
+      --bg: #0b0505;
+      --bg2: #1a0a0a;
+      --panel: rgba(28, 10, 10, 0.92);
+      --panel-2: rgba(18, 8, 8, 0.98);
+      --line: rgba(255, 138, 43, 0.16);
+      --line-2: rgba(255, 60, 47, 0.20);
+      --text: #ffe8e0;
+      --muted: #c48a80;
+      --accent: #ff3c2f;
+      --accent-2: #ff8a2b;
+      --accent-3: #ffcf6b;
+      --success: #9cff9a;
       --warn: #ffd166;
       --danger: #ff7676;
       --shadow: 0 16px 42px rgba(0, 0, 0, 0.42);
@@ -36,9 +36,9 @@
       margin: 0;
       min-height: 100%;
       background:
-        radial-gradient(circle at top, rgba(107, 220, 255, 0.10), transparent 20%),
-        radial-gradient(circle at bottom right, rgba(176, 92, 255, 0.12), transparent 18%),
-        linear-gradient(180deg, #05070c 0%, #0a0f16 45%, #0f1622 100%);
+        radial-gradient(circle at top, rgba(255,60,40,.25), transparent 35%),
+        radial-gradient(circle at bottom, rgba(255,120,40,.15), transparent 40%),
+        linear-gradient(180deg,#050202 0%,#0b0505 45%,#140808 100%);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
@@ -89,7 +89,7 @@
       font-size: 0.76rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: var(--accent-2);
     }
 
     .muted { color: var(--muted); }
@@ -109,7 +109,7 @@
 
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #08101a;
+      color: #1a0904;
       font-weight: 800;
     }
 
@@ -131,14 +131,14 @@
     }
 
     .btn-tab.active {
-      background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
-      color: #130814;
+      background: linear-gradient(135deg, var(--accent), var(--accent-3));
+      color: #2b0c04;
       font-weight: 800;
     }
 
     .btn-complete {
-      background: linear-gradient(135deg, var(--success), var(--accent));
-      color: #07120d;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
+      color: #2b1204;
       font-weight: 900;
     }
 
@@ -178,20 +178,20 @@
     }
 
     .reactor-ring.r1 {
-      border: 3px solid rgba(107, 220, 255, 0.44);
-      box-shadow: 0 0 24px rgba(107, 220, 255, 0.16);
+      border: 3px solid rgba(255, 60, 47, 0.5);
+      box-shadow: 0 0 28px rgba(255, 60, 47, 0.22);
       animation: spin 4.2s linear infinite;
     }
 
     .reactor-ring.r2 {
       inset: 18px;
-      border: 3px dashed rgba(176, 92, 255, 0.66);
+      border: 3px dashed rgba(255, 138, 43, 0.68);
       animation: spin-reverse 3.2s linear infinite;
     }
 
     .reactor-ring.r3 {
       inset: 42px;
-      border: 2px solid rgba(255, 255, 255, 0.11);
+      border: 2px solid rgba(255, 207, 107, 0.16);
       animation: pulse 2.1s ease-in-out infinite;
     }
 
@@ -199,13 +199,13 @@
       inset: 62px;
       background:
         radial-gradient(circle,
-          rgba(107, 220, 255, 0.95) 0%,
-          rgba(176, 92, 255, 0.55) 42%,
-          rgba(255, 110, 169, 0.18) 70%,
+          rgba(255, 207, 107, 0.95) 0%,
+          rgba(255, 138, 43, 0.62) 35%,
+          rgba(255, 60, 47, 0.32) 65%,
           transparent 100%);
       box-shadow:
-        0 0 26px rgba(107, 220, 255, 0.28),
-        0 0 52px rgba(176, 92, 255, 0.24);
+        0 0 30px rgba(255, 138, 43, 0.32),
+        0 0 60px rgba(255, 60, 47, 0.24);
     }
 
     .loading-copy h1 {
@@ -233,7 +233,7 @@
       border-radius: 999px;
       background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
       transition: width 0.35s ease;
-      box-shadow: 0 0 22px rgba(176, 92, 255, 0.34);
+      box-shadow: 0 0 22px rgba(255, 60, 47, 0.34);
     }
 
     .progress-text {
@@ -316,7 +316,7 @@
       width: 100%;
       border-radius: 16px;
       border: 1px solid var(--line-2);
-      background: rgba(8, 12, 19, 0.92);
+      background: rgba(20, 8, 8, 0.92);
       color: var(--text);
       padding: 13px 14px;
       outline: none;
@@ -325,7 +325,7 @@
     .field input:focus,
     .field textarea:focus,
     .field select:focus {
-      border-color: rgba(107, 220, 255, 0.5);
+      border-color: rgba(255, 138, 43, 0.55);
     }
 
     .field-full {
@@ -374,7 +374,7 @@
       border-radius: 18px;
       border: 1px solid var(--line-2);
       background:
-        linear-gradient(180deg, rgba(176, 92, 255, 0.08), rgba(255,255,255,0.02));
+        linear-gradient(180deg, rgba(255, 60, 47, 0.08), rgba(255,255,255,0.02));
     }
 
     .hero-line {
@@ -395,7 +395,7 @@
     .card,
     .archive-block {
       border: 1px solid var(--line-2);
-      background: rgba(10, 14, 22, 0.84);
+      background: rgba(18, 8, 8, 0.84);
       border-radius: 18px;
       overflow: hidden;
     }
@@ -403,7 +403,7 @@
     .sheet-header {
       padding: 16px;
       border-bottom: 1px solid var(--line-2);
-      background: linear-gradient(180deg, rgba(255,110,169,0.06), rgba(255,255,255,0.02));
+      background: linear-gradient(180deg, rgba(255,138,43,0.10), rgba(255,255,255,0.02));
       display: grid;
       gap: 10px;
     }
@@ -445,7 +445,7 @@
       font-size: 0.8rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: var(--accent-2);
       background: rgba(255,255,255,0.02);
     }
 
@@ -465,7 +465,7 @@
       min-width: 180px;
       border-radius: 10px;
       border: 1px solid var(--line-2);
-      background: rgba(8, 12, 19, 0.94);
+      background: rgba(20, 8, 8, 0.94);
       color: var(--text);
       padding: 10px 12px;
       outline: none;
@@ -521,8 +521,8 @@
     .class-banner {
       padding: 14px;
       border-radius: 16px;
-      border: 1px solid rgba(107, 220, 255, 0.16);
-      background: linear-gradient(180deg, rgba(107,220,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255, 138, 43, 0.18);
+      background: linear-gradient(180deg, rgba(255,138,43,0.08), rgba(255,255,255,0.02));
       margin-bottom: 12px;
     }
 
@@ -530,7 +530,7 @@
       font-size: 1.2rem;
       font-weight: 900;
       margin: 0 0 6px;
-      color: var(--accent);
+      color: var(--accent-3);
     }
 
     .progress-list {
@@ -572,8 +572,8 @@
     .status-message {
       padding: 12px 14px;
       border-radius: 14px;
-      border: 1px solid rgba(107,220,255,0.16);
-      background: rgba(107,220,255,0.06);
+      border: 1px solid rgba(255,138,43,0.18);
+      background: rgba(255,138,43,0.08);
       color: var(--text);
       display: none;
       font-weight: 700;
@@ -586,7 +586,7 @@
     .archive-toggle {
       width: 100%;
       border: 1px solid var(--line-2);
-      background: rgba(10, 14, 22, 0.84);
+      background: rgba(18, 8, 8, 0.84);
       color: var(--text);
       border-radius: 16px;
       padding: 16px;
@@ -737,16 +737,16 @@
         </div>
 
         <div class="loading-copy">
-          <p class="eyebrow">GUARDIANS DIRECTIVE ENGINE</p>
-          <h1>Energy Reactor Online</h1>
-          <p class="muted">Stabilizing campaign engine. Syncing operators. Charging directives.</p>
+          <p class="eyebrow">HELLFIRE CAMPAIGN ENGINE</p>
+          <h1>Summoning Mephisto’s Rage</h1>
+          <p class="muted">Hellfire protocols awakening. The first campaign begins.</p>
         </div>
 
         <div class="progress-block">
           <div class="progress-bar">
             <div id="loading-bar-fill" class="progress-fill"></div>
           </div>
-          <p id="loading-status" class="progress-text">Spinning up reactor core...</p>
+          <p id="loading-status" class="progress-text">Igniting hellfire...</p>
         </div>
       </div>
     </section>
@@ -783,7 +783,7 @@
 
           <label class="field">
             <span>Campaign Label</span>
-            <input id="cycleName" type="text" placeholder="Month 01 // Guardians Campaign" />
+            <input id="cycleName" type="text" placeholder="Month 01 // Mephisto’s Rage" />
           </label>
 
           <label class="field">
@@ -837,7 +837,7 @@
         <section class="panel hero-panel">
           <div class="hero-banner">
             <div class="hero-line">
-              <span class="tag" id="arc-name-badge">Doom Directive</span>
+              <span class="tag" id="arc-name-badge">Mephisto’s Rage</span>
               <span class="tag">Month <span id="month-badge">1</span></span>
               <span class="tag">Week <span id="week-badge">1</span></span>
               <span class="tag" id="phase-badge">Foundation</span>
@@ -845,9 +845,9 @@
 
             <div>
               <p class="eyebrow">CURRENT ARC</p>
-              <h2 id="arc-title" style="margin:0;">Doom Directive</h2>
+              <h2 id="arc-title" style="margin:0;">Mephisto’s Rage</h2>
               <p id="arc-subtitle" class="muted" style="margin:8px 0 0;">
-                Three directives this week. Complete them to build your Power Index.
+                Three directives this week. Complete them to build Power Index.
               </p>
             </div>
 
@@ -868,8 +868,8 @@
             <div class="sheet-card">
               <div class="sheet-header">
                 <p class="eyebrow">ACTIVE DIRECTIVE</p>
-                <h2 id="directive-title">Doom Speaks</h2>
-                <p id="directive-subtitle" class="muted">Failure requires permission. Today you are not granting it.</p>
+                <h2 id="directive-title">Hellfire Ignition</h2>
+                <p id="directive-subtitle" class="muted">The furnace opens. You either feed it or get consumed.</p>
 
                 <div class="sheet-actions">
                   <button id="save-notes-btn" class="btn btn-secondary" type="button">Save Notes</button>
@@ -1007,7 +1007,7 @@
         </section>
 
         <p class="footline">
-          Build 2: multi-operator support, Power Index, Mutant Class, directive completion, and campaign progress — all local to this browser.
+          V3 hellfire theme active. Month 1 = Mephisto’s Rage. Month 2 = Chronovium Surge.
         </p>
       </main>
     </section>
@@ -1015,19 +1015,13 @@
 
   <script>
     (() => {
-      const STORAGE_KEY = "guardians_directive_engine_build2";
+      const STORAGE_KEY = "guardians_directive_engine_v3";
 
       const arcPool = [
-        "Doom Directive",
-        "Juggernaut Campaign",
-        "Gamma Ascension",
-        "Colossus Imperative",
-        "High Evolutionary Design",
-        "Omega Annihilation",
-        "Celestial Engine",
-        "Titan Conditioning Matrix",
-        "Vibranium Ascension",
-        "Annihilation Signal"
+        "Mephisto’s Rage",
+        "Chronovium Surge",
+        "Omega Faultline",
+        "Celestial Override"
       ];
 
       const phaseMap = {
@@ -1045,11 +1039,34 @@
         { name: "OMEGA", min: 150, subtitle: "Reality bending." }
       ];
 
+      const mephistoDirectiveNames = {
+        1: [
+          { name: "Hellfire Ignition", subtitle: "The furnace opens. You either feed it or get consumed." },
+          { name: "Demon’s Bargain", subtitle: "Pay in sweat now or blood later." },
+          { name: "Inferno Protocol", subtitle: "Heat rises. So do expectations." }
+        ],
+        2: [
+          { name: "Soul Furnace", subtitle: "The load climbs. The contract tightens." },
+          { name: "Brimstone Load", subtitle: "Heavy work with hellfire in the joints." },
+          { name: "Pit Descent", subtitle: "Walk deeper into the fire and come back stronger." }
+        ],
+        3: [
+          { name: "Helllord Strength", subtitle: "This is the week where mercy leaves the room." },
+          { name: "Blood Contract", subtitle: "Power is purchased rep by rep." },
+          { name: "Devil’s Dominion", subtitle: "Own the room. Own the bar." }
+        ],
+        4: [
+          { name: "Ashen Recovery", subtitle: "The flames quiet, but the steel stays." },
+          { name: "Ember Stability", subtitle: "Lighter work. Cleaner movement." },
+          { name: "Hellgate Reset", subtitle: "Close the month arc and reopen stronger." }
+        ]
+      };
+
       const defaultOperator = {
         id: "",
         profile: {
           name: "",
-          cycleName: "Month 01 // Guardians Campaign",
+          cycleName: "Month 01 // Mephisto’s Rage",
           benchMax: 225,
           squatMax: 315,
           deadliftMax: 285,
@@ -1059,7 +1076,7 @@
         month: 1,
         week: 1,
         workoutIndex: 0,
-        arcName: "Doom Directive",
+        arcName: "Mephisto’s Rage",
         dailyNotes: {},
         actualEntries: {},
         recentEntries: [],
@@ -1143,9 +1160,7 @@
 
       function deleteOperator(id) {
         delete rootData.operators[id];
-        if (rootData.activeOperatorId === id) {
-          rootData.activeOperatorId = "";
-        }
+        if (rootData.activeOperatorId === id) rootData.activeOperatorId = "";
         saveRootData();
       }
 
@@ -1223,7 +1238,7 @@
         return pct(max, 0.7);
       }
 
-      function buildWeekPlan(profile, week) {
+      function buildWeekPlan(profile, week, month) {
         const bench = Number(profile.benchMax) || 225;
         const squat = Number(profile.squatMax) || 315;
         const dead = Number(profile.deadliftMax) || 285;
@@ -1231,10 +1246,10 @@
         const kb = Number(profile.kettlebellBase) || 35;
         const s = weekPrescription(week);
 
-        return [
+        const basePlan = [
           {
-            name: "Doom Speaks",
-            subtitle: "Failure requires permission. Today you are not granting it.",
+            name: "Directive A",
+            subtitle: "Primary opening directive.",
             warmup: [
               "3 min incline walk or bike",
               "Band shoulder activation x 15",
@@ -1252,8 +1267,8 @@
             ]
           },
           {
-            name: "Colossus Mode",
-            subtitle: "Heavy, durable, and disrespectfully hard to move.",
+            name: "Directive B",
+            subtitle: "Second pressure directive.",
             warmup: [
               "3 min bike",
               "Adductor rockback x 8 each side",
@@ -1271,8 +1286,8 @@
             ]
           },
           {
-            name: "Hulk Problem",
-            subtitle: "Subtlety has been cancelled.",
+            name: "Directive C",
+            subtitle: "Final pressure directive.",
             warmup: [
               "3 min row or fast walk",
               "Glute bridge x 12",
@@ -1290,6 +1305,41 @@
             ]
           }
         ];
+
+        if (month === 1) {
+          const names = mephistoDirectiveNames[week] || mephistoDirectiveNames[1];
+          return basePlan.map((directive, index) => ({
+            ...directive,
+            name: names[index].name,
+            subtitle: names[index].subtitle
+          }));
+        }
+
+        return basePlan.map((directive, index) => {
+          const monthSets = {
+            2: [
+              ["Chrono Break", "Time is unstable. Your output should be too."],
+              ["Rift Pressure", "Push through the split and hold the line."],
+              ["Temporal Collapse", "Power under distortion."]
+            ],
+            3: [
+              ["Faultline Pressure", "The ground shifts. You do not."],
+              ["Omega Drift", "Power without waste."],
+              ["Breakpoint Dominion", "Drive through instability."]
+            ],
+            4: [
+              ["Celestial Signal", "Controlled force under a bigger sky."],
+              ["Starfall Load", "Heavy work with cosmic posture."],
+              ["Override Pulse", "Finish strong. Finish clean."]
+            ]
+          };
+          const themed = monthSets[month] || monthSets[2];
+          return {
+            ...directive,
+            name: themed[index][0],
+            subtitle: themed[index][1]
+          };
+        });
       }
 
       const screens = {
@@ -1468,7 +1518,7 @@
         } else {
           els.profileScreenTitle.textContent = "Create Operator";
           els.name.value = "";
-          els.cycleName.value = `Month 01 // Guardians Campaign`;
+          els.cycleName.value = "Month 01 // Mephisto’s Rage";
           els.benchMax.value = 225;
           els.squatMax.value = 315;
           els.deadliftMax.value = 285;
@@ -1666,7 +1716,7 @@
           return;
         }
 
-        const plan = buildWeekPlan(operator.profile, operator.week);
+        const plan = buildWeekPlan(operator.profile, operator.week, operator.month);
         if (operator.workoutIndex > 2) operator.workoutIndex = 0;
 
         renderHeader(operator);
@@ -1712,7 +1762,7 @@
         const operator = getCurrentOperator();
         if (!operator) return;
 
-        const plan = buildWeekPlan(operator.profile, operator.week);
+        const plan = buildWeekPlan(operator.profile, operator.week, operator.month);
         const directive = plan[operator.workoutIndex];
         const completeKey = directiveCompleteKey(operator);
 
@@ -1841,11 +1891,11 @@
       function bootLoadingSequence() {
         showScreen("loading");
         const steps = [
-          { pct: 20, text: "Spinning up reactor core..." },
-          { pct: 42, text: "Syncing operator profiles..." },
-          { pct: 66, text: "Forging monthly directives..." },
-          { pct: 86, text: "Calibrating campaign HUD..." },
-          { pct: 100, text: "Engine online." }
+          { pct: 20, text: "Igniting hellfire..." },
+          { pct: 42, text: "Binding infernal contracts..." },
+          { pct: 66, text: "Opening the pit gate..." },
+          { pct: 86, text: "Summoning strength..." },
+          { pct: 100, text: "Hellfire campaign online." }
         ];
 
         let index = 0;
@@ -1908,6 +1958,9 @@
       els.runRemaxBtn.addEventListener("click", runRemaxAndAdvanceMonth);
 
       els.archiveToggle.addEventListener("click", toggleArchive);
+
+      let rootData = getRootData();
+      let editingOperatorId = "";
 
       bootLoadingSequence();
     })();

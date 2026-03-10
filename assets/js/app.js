@@ -14,9 +14,79 @@ const forgeHud = document.getElementById("forge-hud")
 const prevWorkoutBtn = document.getElementById("prev-workout")
 const nextWorkoutBtn = document.getElementById("next-workout")
 const resetWorkoutChecksBtn = document.getElementById("reset-workout-checks")
+const toggleArchiveBtn = document.getElementById("toggle-archive")
 
 const loadingText = document.getElementById("loading-text")
 const loadingBar = document.getElementById("loading-bar")
+
+let archiveExpanded = false
+
+function renderLiftPreview(bigLift) {
+  const setLines = bigLift.sets
+    .map((set) => {
+      if (typeof set.weight === "string") {
+        return `<div class="directive-line">${set.weight} x ${set.reps}</div>`
+      }
+      return `<div class="directive-line">${set.weight} x ${set.reps}</div>`
+    })
+    .join("")
+
+  return `
+    <div class="directive-block">
+      <div class="directive-label">${bigLift.lift}</div>
+      ${bigLift.notes ? `<div class="muted-text">${bigLift.notes}</div>` : ""}
+      ${setLines}
+    </div>
+  `
+}
+
+function renderDirectiveBody(day) {
+  if (day.infinityForge) {
+    const boss = day.infinityForge
+
+    return `
+      <div class="boss-warning">FINAL BOSS ACTIVE — Record top sets. These become your new numbers.</div>
+
+      <div class="directive-stack">
+        ${boss.bigLifts.map(renderLiftPreview).join("")}
+
+        <div class="directive-block">
+          <div class="directive-label">Forge Movement</div>
+          <div class="directive-line">${boss.forgeMovement.name} — ${boss.forgeMovement.prescription}</div>
+          ${boss.forgeMovement.notes ? `<div class="muted-text">${boss.forgeMovement.notes}</div>` : ""}
+        </div>
+
+        <div class="directive-block">
+          <div class="directive-label">Titan Circuit</div>
+          ${boss.titanCircuit.map(item => `<div class="directive-line">${item.name} — ${item.prescription}</div>`).join("")}
+        </div>
+      </div>
+    `
+  }
+
+  return `
+    <div class="directive-stack">
+      ${day.bigLifts.map(renderLiftPreview).join("")}
+
+      <div class="directive-block">
+        <div class="directive-label">Forge Movement</div>
+        <div class="directive-line">${day.forgeMovement.name} — ${day.forgeMovement.prescription}</div>
+        ${day.forgeMovement.notes ? `<div class="muted-text">${day.forgeMovement.notes}</div>` : ""}
+      </div>
+
+      <div class="directive-block">
+        <div class="directive-label">${day.thrusterLadder.name}</div>
+        <div class="directive-line">${day.thrusterLadder.reps.join(" / ")}</div>
+        ${day.thrusterLadder.notes ? `<div class="muted-text">${day.thrusterLadder.notes}</div>` : ""}
+      </div>
+
+      <div class="directive-block">
+        <div class="directive-label">Optional</div>
+        <div class="directive-line">${day.optional.name} — ${day.optional.prescription}</div>
+      </div>
+    </div>
+  `
+}
 
 function renderProgram() {
   if (!state.program) {
@@ -24,12 +94,24 @@ function renderProgram() {
     return
   }
 
-  programOutput.innerHTML = state.program.weeks.map(week => `
+  programOutput.className = archiveExpanded ? "archive-expanded" : "archive-collapsed"
+
+  programOutput.innerHTML = state.program.weeks.map((week) => `
     <div class="nested-card">
       <h3>Week ${week.number} — ${week.name}</h3>
       <p class="muted-text">${week.focus}</p>
+      ${week.days.map((day) => `
+        <div class="directive-block">
+          <div class="directive-label">${day.title}</div>
+          <div class="directive-line">${day.flavor || week.focus}</div>
+        </div>
+      `).join("")}
     </div>
   `).join("")
+
+  if (toggleArchiveBtn) {
+    toggleArchiveBtn.textContent = archiveExpanded ? "Collapse Archive" : "Expand Archive"
+  }
 }
 
 function getCurrentWeekAndDay() {
@@ -61,20 +143,23 @@ function renderForgeHud() {
   const totalDirectives = state.program.weeks.reduce((sum, week) => sum + week.days.length, 0)
 
   let currentDirectiveNumber = 0
+  let found = false
+
   for (let i = 0; i < state.program.weeks.length; i++) {
     for (let j = 0; j < state.program.weeks[i].days.length; j++) {
       currentDirectiveNumber++
       if (i === current.weekIndex && j === current.dayIndex) {
+        found = true
         break
       }
     }
-    if (i === current.weekIndex) break
+    if (found) break
   }
 
   const progressPercent = Math.round((currentDirectiveNumber / totalDirectives) * 100)
 
   const bossWarning = current.day.title?.toLowerCase().includes("infinity forge")
-    ? `<div class="boss-warning">FINAL BOSS ACTIVE — Record top sets. These become your new numbers.</div>`
+    ? `<div class="boss-warning">FINAL BOSS ACTIVE — Reforging Record will set your next cycle maxes.</div>`
     : ""
 
   forgeHud.innerHTML = `
@@ -126,6 +211,7 @@ function renderTodayWorkout() {
     <h3 class="today-title">Cycle Phase: ${week.name}</h3>
     <p class="today-subtitle">${day.title}</p>
     <p class="muted-text">${day.flavor || week.focus}</p>
+    ${renderDirectiveBody(day)}
   `
 }
 
@@ -312,8 +398,17 @@ scorecardForm?.addEventListener("submit", (e) => {
 
 prevWorkoutBtn?.addEventListener("click", () => moveWorkout(-1))
 nextWorkoutBtn?.addEventListener("click", () => moveWorkout(1))
+
 resetWorkoutChecksBtn?.addEventListener("click", () => {
-  // placeholder so the button still exists cleanly
+  state.currentWorkout = { weekIndex: 0, dayIndex: 0 }
+  saveAppData(state)
+  renderTodayWorkout()
+  renderForgeHud()
+})
+
+toggleArchiveBtn?.addEventListener("click", () => {
+  archiveExpanded = !archiveExpanded
+  renderProgram()
 })
 
 runLoadingSequence()

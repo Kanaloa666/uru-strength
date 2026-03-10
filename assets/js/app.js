@@ -28,6 +28,56 @@ const scorecardHistory = document.getElementById("scorecard-history")
 
 let archiveExpanded = false
 
+// ---------- Set tracking (checkbox + note per set) ----------
+function ensureTracking() {
+  if (!state.setTracking) state.setTracking = {}
+}
+
+function trackKey(weekIndex, dayIndex, liftIndex, setType, setIndex) {
+  return `w${weekIndex}|d${dayIndex}|l${liftIndex}|${setType}|s${setIndex}`
+}
+
+function getTracked(key) {
+  ensureTracking()
+  return state.setTracking[key] || { checked: false, note: "" }
+}
+
+function setTracked(key, updates) {
+  ensureTracking()
+  const curr = getTracked(key)
+  state.setTracking[key] = { ...curr, ...updates }
+  saveAppData(state)
+}
+
+function clearDirectiveTracking(weekIndex, dayIndex) {
+  ensureTracking()
+  const prefix = `w${weekIndex}|d${dayIndex}|`
+  Object.keys(state.setTracking).forEach(k => {
+    if (k.startsWith(prefix)) delete state.setTracking[k]
+  })
+  saveAppData(state)
+}
+
+function attachTrackingListeners() {
+  document.querySelectorAll("[data-track-key]").forEach(el => {
+    el.addEventListener("change", (e) => {
+      const key = e.target.getAttribute("data-track-key")
+      setTracked(key, { checked: !!e.target.checked })
+    })
+  })
+
+  document.querySelectorAll("[data-note-key]").forEach(el => {
+    const save = () => {
+      const key = el.getAttribute("data-note-key")
+      const val = (el.value || "").trim()
+      setTracked(key, { note: val })
+      el.classList.toggle("saved-note", !!val)
+    }
+    el.addEventListener("change", save)
+    el.addEventListener("blur", save)
+  })
+}
+
 function showScreen(name){
   if (name === "profile"){
     screenProfile.classList.remove("hidden")
@@ -66,7 +116,6 @@ function runLoadingSequence(){
     const loading = document.getElementById("loading-screen")
     if (loading) loading.style.display = "none"
 
-    // after loading, decide screen
     if (state.profile?.maxes && state.program?.weeks?.length){
       showScreen("dashboard")
       renderAll()
@@ -87,9 +136,8 @@ function getCurrent(){
 }
 
 function renderForgeHud(){
-  if (!forgeHud){
-    return
-  }
+  if (!forgeHud) return
+
   if (!state.program?.weeks?.length){
     forgeHud.innerHTML = "<p>No cycle forged yet.</p>"
     return
@@ -147,17 +195,42 @@ function renderForgeHud(){
   `
 }
 
-function liftPreview(bigLift){
-  const sets = (bigLift.sets || []).map(s => {
-    if (typeof s.weight === "string") return `<div class="directive-line">${s.weight} x ${s.reps}</div>`
-    return `<div class="directive-line">${s.weight} x ${s.reps}</div>`
+// ---- Render set rows with checkbox + free text note ----
+function renderSetRow(label, key) {
+  const t = getTracked(key)
+  return `
+    <div class="set-row">
+      <input class="set-check" type="checkbox" data-track-key="${key}" ${t.checked ? "checked" : ""}/>
+      <div class="set-text">${label}</div>
+      <input class="set-note ${t.note ? "saved-note" : ""}" type="text" data-note-key="${key}"
+        value="${t.note || ""}" placeholder="notes / actual reps"/>
+    </div>
+  `
+}
+
+function liftBlockWithTracking(bigLift, wi, di, liftIndex) {
+  const warmups = (bigLift.warmups || []).map((w, idx) => {
+    const label = w.label ? `${w.label} x ${w.reps}` : `${w.weight} x ${w.reps}`
+    return renderSetRow(label, trackKey(wi, di, liftIndex, "warmup", idx))
+  }).join("")
+
+  const sets = (bigLift.sets || []).map((s, idx) => {
+    const label = typeof s.weight === "string"
+      ? `${s.weight} x ${s.reps}`
+      : `${s.weight} x ${s.reps}`
+    return renderSetRow(label, trackKey(wi, di, liftIndex, "work", idx))
   }).join("")
 
   return `
     <div class="directive-block">
       <div class="directive-label">${bigLift.lift}</div>
       ${bigLift.notes ? `<div class="muted-text">${bigLift.notes}</div>` : ""}
-      ${sets}
+
+      <div class="mini-title">Warmups</div>
+      ${warmups || `<div class="muted-text">—</div>`}
+
+      <div class="mini-title">Work Sets</div>
+      ${sets || `<div class="muted-text">—</div>`}
     </div>
   `
 }
@@ -171,17 +244,19 @@ function renderDirective(){
     return
   }
 
-  const { week, day } = current
+  const { week, day, wi, di } = current
 
+  // Boss day
   if (day.infinityForge){
     const boss = day.infinityForge
+
     todayWorkout.innerHTML = `
       <h3>Cycle Phase: ${week.name}</h3>
       <p class="muted-text">${week.focus}</p>
-      <div class="boss-warning">FINAL BOSS — record top sets in Reforging Record.</div>
+      <div class="boss-warning">FINAL BOSS — log your top sets in Reforging Record.</div>
 
       <div class="directive-stack">
-        ${boss.bigLifts.map(liftPreview).join("")}
+        ${boss.bigLifts.map((lift, idx) => liftBlockWithTracking(lift, wi, di, idx)).join("")}
 
         <div class="directive-block">
           <div class="directive-label">Forge Movement</div>
@@ -195,16 +270,19 @@ function renderDirective(){
         </div>
       </div>
     `
+
+    attachTrackingListeners()
     return
   }
 
+  // Normal day
   todayWorkout.innerHTML = `
     <h3>Cycle Phase: ${week.name}</h3>
     <p><strong>${day.title}</strong></p>
     <p class="muted-text">${day.flavor || week.focus}</p>
 
     <div class="directive-stack">
-      ${day.bigLifts.map(liftPreview).join("")}
+      ${day.bigLifts.map((lift, idx) => liftBlockWithTracking(lift, wi, di, idx)).join("")}
 
       <div class="directive-block">
         <div class="directive-label">Forge Movement</div>
@@ -224,13 +302,15 @@ function renderDirective(){
       </div>
     </div>
   `
+
+  attachTrackingListeners()
 }
 
 function renderArchive(){
   if (!programOutput) return
 
   if (!state.program?.weeks?.length){
-    programOutput.innerHTML = "<p>No archive yet.</p>"
+    programOutput.innerHTML = "<p class='muted-text'>No archive yet.</p>"
     return
   }
 
@@ -332,6 +412,7 @@ function moveWorkout(dir){
   renderDirective()
 }
 
+// ---------- Events ----------
 profileForm?.addEventListener("submit", (e) => {
   e.preventDefault()
 
@@ -350,9 +431,9 @@ profileForm?.addEventListener("submit", (e) => {
   state.program = generateProgram(profile.maxes)
   state.currentWorkout = { weekIndex: 0, dayIndex: 0 }
 
-  saveAppData(state)
+  ensureTracking()
 
-  // Jump to dashboard after forging
+  saveAppData(state)
   showScreen("dashboard")
   renderAll()
 })
@@ -402,18 +483,23 @@ scorecardForm?.addEventListener("submit", (e) => {
 
   applyNewMaxesFromScorecard(state, newCard)
 
-  // Reforge
   if (state.profile?.maxes){
     state.program = generateProgram(state.profile.maxes)
     state.currentWorkout = { weekIndex: 0, dayIndex: 0 }
   }
 
   saveAppData(state)
-
-  // stay on dashboard and refresh
   showScreen("dashboard")
   renderAll()
   scorecardForm.reset()
+})
+
+// Reset checks: clears ONLY this directive’s tracking
+resetWorkoutChecksBtn?.addEventListener("click", () => {
+  const cur = getCurrent()
+  if (!cur) return
+  clearDirectiveTracking(cur.wi, cur.di)
+  renderDirective()
 })
 
 runLoadingSequence()

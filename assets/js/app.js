@@ -1,47 +1,86 @@
-const URU_STORAGE_KEY = "uru_strength_v4";
+let state = loadAppData();
 
-function getDefaultData() {
+const loadingScreen = document.getElementById("loading-screen");
+const loadingText = document.getElementById("loading-text");
+const loadingBar = document.getElementById("loading-bar");
+
+const profileScreen = document.getElementById("screen-profile");
+const dashboardScreen = document.getElementById("screen-dashboard");
+
+const profileForm = document.getElementById("profile-form");
+
+function showProfileScreen() {
+  if (loadingScreen) loadingScreen.style.display = "none";
+  if (dashboardScreen) dashboardScreen.classList.add("hidden");
+  if (profileScreen) profileScreen.classList.remove("hidden");
+}
+
+function showDashboardScreen() {
+  if (loadingScreen) loadingScreen.style.display = "none";
+  if (profileScreen) profileScreen.classList.add("hidden");
+  if (dashboardScreen) dashboardScreen.classList.remove("hidden");
+}
+
+function bootApp() {
+  let progress = 0;
+
+  const steps = [
+    { at: 20, text: "Heating uru..." },
+    { at: 45, text: "Tempering steel..." },
+    { at: 70, text: "Forging directive..." },
+    { at: 90, text: "Preparing HUD..." }
+  ];
+
+  const timer = setInterval(() => {
+    progress += 10;
+
+    if (loadingBar) {
+      loadingBar.style.width = `${progress}%`;
+    }
+
+    const step = steps.find((item) => item.at === progress);
+    if (step && loadingText) {
+      loadingText.textContent = step.text;
+    }
+
+    if (progress >= 100) {
+      clearInterval(timer);
+
+      setTimeout(() => {
+        if (state.profile) {
+          showDashboardScreen();
+        } else {
+          showProfileScreen();
+        }
+      }, 250);
+    }
+  }, 120);
+}
+
+function readProfileForm() {
   return {
-    profile: null,
-    program: null,
-    logs: [],
-    scorecards: [],
-    currentWorkout: { weekIndex: 0, dayIndex: 0 },
-
-    // NEW: UI prefs
-    ui: {
-      archiveExpanded: false,
-      gymMode: false,
-      gymLiftIndex: 0,
-      gymShowAccessories: true
-    },
-
-    // set tracking for checkboxes + notes
-    setTracking: {}
+    name: document.getElementById("name")?.value.trim() || "",
+    bodyweight: Number(document.getElementById("bodyweight")?.value) || 0,
+    bench: Number(document.getElementById("bench")?.value) || 0,
+    squat: Number(document.getElementById("squat")?.value) || 0,
+    deadlift: Number(document.getElementById("deadlift")?.value) || 0,
+    sgdl: Number(document.getElementById("sgdl")?.value) || 0
   };
 }
 
-function loadAppData() {
-  try {
-    const raw = localStorage.getItem(URU_STORAGE_KEY);
-    const data = raw ? JSON.parse(raw) : getDefaultData();
+function handleProfileSubmit(event) {
+  event.preventDefault();
 
-    // Backfill new fields safely
-    if (!data.ui) data.ui = getDefaultData().ui;
-    if (typeof data.ui.archiveExpanded !== "boolean") data.ui.archiveExpanded = false;
-    if (typeof data.ui.gymMode !== "boolean") data.ui.gymMode = false;
-    if (typeof data.ui.gymLiftIndex !== "number") data.ui.gymLiftIndex = 0;
-    if (typeof data.ui.gymShowAccessories !== "boolean") data.ui.gymShowAccessories = true;
+  const profile = readProfileForm();
 
-    if (!data.setTracking) data.setTracking = {};
-    if (!data.currentWorkout) data.currentWorkout = { weekIndex: 0, dayIndex: 0 };
+  state.profile = profile;
+  saveAppData(state);
 
-    return data;
-  } catch {
-    return getDefaultData();
-  }
+  showDashboardScreen();
 }
 
-function saveAppData(data) {
-  localStorage.setItem(URU_STORAGE_KEY, JSON.stringify(data));
+if (profileForm) {
+  profileForm.addEventListener("submit", handleProfileSubmit);
 }
+
+window.addEventListener("load", bootApp);

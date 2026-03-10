@@ -105,22 +105,22 @@ function createThrusterLadder(weekNumber) {
     1: {
       name: "Landmine Thruster Ladder",
       reps: [2, 4, 6, 8, 10],
-      notes: "Foundation ladder — smooth reps, strong brace."
+      notes: "Smooth reps. Hard brace. Establish the pattern."
     },
     2: {
       name: "Landmine Thruster Ladder",
       reps: [3, 5, 7, 9],
-      notes: "Strength ladder — a little heavier, stay crisp."
+      notes: "Climb harder. Stay crisp under pressure."
     },
     3: {
       name: "Landmine Thruster Ladder",
       reps: [5, 5, 5, 5, 5],
-      notes: "Power ladder — explosive intent."
+      notes: "Explosive intent. Drive like a war machine."
     },
     4: {
       name: "Landmine Thruster Ladder",
       reps: [3, 3, 3, 3, 3],
-      notes: "Deload ladder — light and clean."
+      notes: "Control the movement. Save the violence for the boss fight."
     }
   };
 
@@ -130,7 +130,8 @@ function createThrusterLadder(weekNumber) {
 function createInfinityForge(maxes) {
   return {
     title: "Infinity Forge",
-    subtitle: "Final Boss — max out and reforge the next cycle.",
+    subtitle: "Final Boss — max out, record the numbers, reforge the cycle.",
+    flavor: "The forge does not ask what you were. It reveals what remains.",
     bigLifts: [
       {
         lift: "Bench Press",
@@ -179,11 +180,12 @@ function generateProgram(maxes) {
     weeks: [
       {
         number: 1,
-        name: "Foundation",
-        focus: "Ascent week — build positions, volume, and work capacity.",
+        name: "Uru Awakening",
+        focus: "Build the frame. Own the pattern. Start the forging.",
         days: [
           {
-            title: "Day 1 — Bench / SGDL",
+            title: "Directive: Uru Awakens",
+            flavor: "The metal remembers the first strike.",
             bigLifts: [
               createBigLift("Bench Press", maxes.bench, PATTERNS.week1Ascent),
               createBigLift("Snatch Grip Deadlift", maxes.sgdl, PATTERNS.week1Ascent)
@@ -197,7 +199,8 @@ function generateProgram(maxes) {
             optional: createAccessory("Meadows Row", "3 x 10 / side")
           },
           {
-            title: "Day 2 — Squat / Close Grip",
+            title: "Directive: Warpath Ignition",
+            flavor: "A frame is not built gently.",
             bigLifts: [
               createBigLift("Back Squat", maxes.squat, PATTERNS.week1Ascent),
               createBigLift("Close Grip Bench", maxes.bench, PATTERNS.week1Ascent)
@@ -211,7 +214,8 @@ function generateProgram(maxes) {
             optional: createAccessory("Hammer Curl", "3 x 10")
           },
           {
-            title: "Day 3 — Deadlift / Wide Grip",
+            title: "Directive: Chromium Drive",
+            flavor: "Engineered pressure. Reinforced intent.",
             bigLifts: [
               createBigLift("Deadlift", maxes.deadlift, PATTERNS.week1Ascent),
               createBigLift("Wide Grip Bench", maxes.bench, PATTERNS.week1Ascent)
@@ -228,11 +232,12 @@ function generateProgram(maxes) {
       },
       {
         number: 2,
-        name: "Strength",
-        focus: "Pyramid week — regular and inverted loading.",
+        name: "Mad Titan Ascent",
+        focus: "Climb heavier. Sharpen the weapon through pyramids.",
         days: [
           {
-            title: "Day 1 — Regular Pyramid",
+            title: "Directive: Mad Titan Protocol",
+            flavor: "Pressure reveals what survives the climb.",
             bigLifts: [
               createBigLift("Bench Press", maxes.bench, PATTERNS.week2Regular),
               createBigLift("Snatch Grip Deadlift", maxes.sgdl, PATTERNS.week2Regular)
@@ -246,7 +251,8 @@ function generateProgram(maxes) {
             optional: createAccessory("Meadows Row", "3 x 8 / side")
           },
           {
-            title: "Day 2 — Inverted Pyramid",
+            title: "Directive: Gravity Breaker",
+            flavor: "Weight bends. You do not.",
             bigLifts: [
               createBigLift("Paused Back Squat", maxes.squat, PATTERNS.week2Inverted, "2 sec pause in the hole"),
               createBigLift("Paused Bench", maxes.bench, PATTERNS.week2Inverted, "1 sec pause on chest")
@@ -260,7 +266,8 @@ function generateProgram(maxes) {
             optional: createAccessory("Barbell Curl", "4 x 6")
           },
           {
-            title: "Day 3 — Regular Pyramid",
+            title: "Directive: War Engine",
+            flavor: "March is over. Now the machine starts moving.",
             bigLifts: [
               createBigLift("Deadlift", maxes.deadlift, PATTERNS.week2Regular),
               createBigLift("Close Grip Bench", maxes.bench, PATTERNS.week2Regular)
@@ -277,11 +284,12 @@ function generateProgram(maxes) {
       },
       {
         number: 3,
-        name: "Power",
-        focus: "Higher percent, lower reps, ascent and descent wave feel.",
+        name: "Doom Engine",
+        focus: "High force. Low hesitation. Violent intent with controlled power.",
         days: [
           {
-            title: "Day 1 — Power Ascent",
+            title: "Directive: Doom Engine Prime",
+            flavor: "The hammer strikes harder with every cycle.",
             bigLifts: [
               createBigLift("Bench Press", maxes.bench, PATTERNS.week3PowerAscent),
               createBigLift("Snatch Grip Deadlift", maxes.sgdl, PATTERNS.week3PowerAscent)
@@ -295,7 +303,8 @@ function generateProgram(maxes) {
             optional: createAccessory("Meadows Row", "3 x 8 / side")
           },
           {
-            title: "Day 2 — Power Wave",
+            title: "Directive: Titan Breaker",
+            flavor: "Break the weight before it breaks you.",
             bigLifts: [
               createBigLift("Back Squat", maxes.squat, PATTERNS.week3PowerWave),
               createBigLift("Tempo Bench", maxes.bench, PATTERNS.week3PowerWave, "3 sec eccentric")
@@ -309,7 +318,8 @@ function generateProgram(maxes) {
             optional: createAccessory("Hammer Curl", "3 x 10")
           },
           {
-            title: "Day 3 — Power Ascent",
+            title: "Directive: Infinity Pressure",
+            flavor: "Strength bends reality when the brace holds.",
             bigLifts: [
               createBigLift("Deadlift", maxes.deadlift, PATTERNS.week3PowerAscent),
               createBigLift("Wide Grip Bench", maxes.bench, PATTERNS.week3PowerAscent)
@@ -326,11 +336,12 @@ function generateProgram(maxes) {
       },
       {
         number: 4,
-        name: "Deload",
-        focus: "Tempo, pauses, eccentrics, reduced fatigue.",
+        name: "Reforging Phase",
+        focus: "Reduce fatigue. Refine mechanics. Prepare for the final forging.",
         days: [
           {
-            title: "Day 1 — Bench Control",
+            title: "Directive: Controlled Reforging",
+            flavor: "Precision before destruction.",
             bigLifts: [
               createBigLift("Bench Press", maxes.bench, PATTERNS.week4TempoBench, "3 sec eccentric"),
               createBigLift("Snatch Grip Deadlift", maxes.sgdl, PATTERNS.week4Deload, "2 sec pause below knee")
@@ -344,7 +355,8 @@ function generateProgram(maxes) {
             optional: createAccessory("Recovery priority", "Skip extra work if fatigue is high")
           },
           {
-            title: "Day 2 — Squat Control",
+            title: "Directive: Tempered Iron",
+            flavor: "The blade cools before it cuts again.",
             bigLifts: [
               createBigLift("Pause Back Squat", maxes.squat, PATTERNS.week4Deload, "2 sec pause in the hole"),
               createBigLift("Tempo Bench", maxes.bench, PATTERNS.week4TempoBench, "3 sec eccentric")
@@ -358,7 +370,7 @@ function generateProgram(maxes) {
             optional: createAccessory("Mobility / walk / recovery", "10–15 min easy")
           },
           {
-            title: "Day 3 — Final Boss",
+            title: "Directive: Infinity Forge",
             infinityForge: createInfinityForge(maxes)
           }
         ]

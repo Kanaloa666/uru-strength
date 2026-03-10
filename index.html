@@ -9,14 +9,17 @@
     :root {
       --bg: #090b10;
       --bg2: #111722;
-      --panel: rgba(16, 23, 34, 0.88);
-      --panel-2: rgba(10, 15, 24, 0.92);
+      --panel: rgba(16, 23, 34, 0.9);
+      --panel-2: rgba(10, 15, 24, 0.96);
       --line: rgba(95, 145, 255, 0.18);
+      --line-strong: rgba(126, 242, 255, 0.22);
       --text: #eef3ff;
       --muted: #9fb0cc;
       --accent: #66a3ff;
       --accent-2: #7ef2ff;
+      --accent-3: #c1d8ff;
       --danger: #ff6363;
+      --success: #7dffb2;
       --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
       --radius: 22px;
     }
@@ -66,7 +69,7 @@
     .profile-panel,
     .hud-grid,
     .hud-topbar {
-      width: min(1100px, 100%);
+      width: min(1180px, 100%);
       margin: 0 auto;
     }
 
@@ -129,7 +132,9 @@
     .hud-topbar h1,
     .directive-card h3,
     .archive-block h3,
-    .lift-log h3 {
+    .lift-log h3,
+    .sheet-card h3,
+    .week-nav h3 {
       margin: 0;
     }
 
@@ -189,7 +194,7 @@
 
     .profile-panel {
       padding: 24px;
-      max-width: 780px;
+      max-width: 840px;
       margin-top: 32px;
     }
 
@@ -226,6 +231,10 @@
       outline: none;
     }
 
+    .field textarea {
+      resize: vertical;
+    }
+
     .field-full {
       grid-column: 1 / -1;
     }
@@ -242,6 +251,12 @@
       padding: 12px 16px;
       cursor: pointer;
       color: white;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
     }
 
     .btn-primary {
@@ -257,6 +272,11 @@
     .btn-danger {
       background: rgba(255, 99, 99, 0.18);
       color: #ffd2d2;
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(126, 242, 255, 0.14);
     }
 
     .hud-topbar {
@@ -286,17 +306,153 @@
 
     .directive-layout {
       display: grid;
-      grid-template-columns: 1.15fr 1.15fr 1fr;
+      grid-template-columns: 1.35fr 0.95fr;
       gap: 16px;
+      align-items: start;
     }
 
     .directive-card,
     .stat-card,
-    .archive-block {
+    .archive-block,
+    .sheet-card {
       border: 1px solid rgba(102, 163, 255, 0.14);
       background: rgba(9, 13, 21, 0.84);
       border-radius: 18px;
       padding: 16px;
+    }
+
+    .week-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(126, 242, 255, 0.14);
+      background: rgba(8, 12, 19, 0.72);
+    }
+
+    .week-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .week-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(126, 242, 255, 0.08);
+      border: 1px solid rgba(126, 242, 255, 0.18);
+      color: var(--accent-3);
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    .protocol-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .tag {
+      font-size: 0.78rem;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(102, 163, 255, 0.12);
+      color: var(--muted);
+    }
+
+    .sheet-card {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .sheet-header {
+      padding: 16px;
+      border-bottom: 1px solid rgba(126, 242, 255, 0.14);
+      background:
+        linear-gradient(180deg, rgba(102, 163, 255, 0.06), rgba(255,255,255,0.02));
+    }
+
+    .sheet-sub {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .paper-table-wrap {
+      overflow-x: auto;
+    }
+
+    .paper-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    .paper-table th,
+    .paper-table td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.95rem;
+    }
+
+    .paper-table th {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-2);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .paper-table td.notes-col {
+      color: var(--muted);
+      min-width: 220px;
+    }
+
+    .lift-name {
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .lift-sub {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .scheme-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(126, 242, 255, 0.16);
+      background: rgba(126, 242, 255, 0.08);
+      color: var(--accent-3);
+    }
+
+    .pen-line {
+      display: block;
+      min-height: 26px;
+      border-bottom: 1px dashed rgba(159, 176, 204, 0.35);
+      margin-top: 8px;
+    }
+
+    .directive-side {
+      display: grid;
+      gap: 16px;
     }
 
     .clean-list {
@@ -323,7 +479,7 @@
 
     .stat-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 12px;
       margin-bottom: 16px;
     }
@@ -342,7 +498,7 @@
     }
 
     .stat-card strong {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
 
     .lift-log {
@@ -375,7 +531,7 @@
     .archive-content {
       overflow: hidden;
       transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.25s ease;
-      max-height: 1000px;
+      max-height: 1600px;
       opacity: 1;
       margin-top: 14px;
     }
@@ -428,15 +584,17 @@
       50% { transform: scale(1.03); opacity: 1; }
     }
 
-    @media (max-width: 920px) {
+    @media (max-width: 1080px) {
       .directive-layout {
         grid-template-columns: 1fr;
       }
 
       .stat-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
+    }
 
+    @media (max-width: 920px) {
       .form-grid {
         grid-template-columns: 1fr;
       }
@@ -452,6 +610,10 @@
 
       .topbar-actions .btn {
         flex: 1;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -490,7 +652,11 @@
       }
 
       .hud-topbar h1 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
+      }
+
+      .paper-table {
+        min-width: 680px;
       }
     }
   </style>
@@ -508,15 +674,15 @@
 
         <div class="loading-copy">
           <p class="eyebrow">URU STRENGTH FORGE</p>
-          <h1>Initializing Forge Systems</h1>
-          <p class="muted">Calibrating directive engine, syncing archive, priming the next cycle.</p>
+          <h1>Forging URU Strength</h1>
+          <p class="muted">Attuning the forge. Tempering iron into URU.</p>
         </div>
 
         <div class="progress-block">
           <div class="progress-bar">
             <div id="loading-bar-fill" class="progress-fill"></div>
           </div>
-          <p id="loading-status" class="progress-text">Powering core...</p>
+          <p id="loading-status" class="progress-text">Awakening the forge core...</p>
         </div>
       </div>
     </section>
@@ -525,8 +691,8 @@
       <div class="panel profile-panel">
         <div class="panel-header">
           <p class="eyebrow">FORGE PROFILE</p>
-          <h2>Set Your Working Profile</h2>
-          <p class="muted">Lock in your name, cycle, and core lifts before entering the HUD.</p>
+          <h2>Set Your URU Profile</h2>
+          <p class="muted">Build your 4-week sheet around your current maxes and training intent.</p>
         </div>
 
         <form id="profile-form" class="form-grid">
@@ -536,8 +702,8 @@
           </label>
 
           <label class="field">
-            <span>Current Cycle</span>
-            <input type="text" id="cycleName" placeholder="Cycle 01 // Base Build" />
+            <span>Cycle Name</span>
+            <input type="text" id="cycleName" placeholder="Cycle 01 // URU Ascent" />
           </label>
 
           <label class="field">
@@ -555,13 +721,18 @@
             <input type="number" id="deadliftMax" min="0" step="1" placeholder="285" />
           </label>
 
+          <label class="field">
+            <span>Landmine Base Load</span>
+            <input type="number" id="landmineBase" min="0" step="5" placeholder="45" />
+          </label>
+
           <label class="field field-full">
             <span>Forge Notes</span>
-            <textarea id="profileNotes" rows="4" placeholder="Heavy bench focus, sub-hour sessions, snatch-grip deadlift emphasis..."></textarea>
+            <textarea id="profileNotes" rows="4" placeholder="Examples: keep sessions under an hour, emphasize upper back and lats, landmine work should stay athletic, hip/adductor stiffness management..."></textarea>
           </label>
 
           <div class="actions field-full">
-            <button type="submit" class="btn btn-primary">Enter Forge HUD</button>
+            <button type="submit" class="btn btn-primary">Enter URU Forge</button>
           </div>
         </form>
       </div>
@@ -570,7 +741,7 @@
     <section id="hud-screen" class="screen">
       <header class="hud-topbar">
         <div>
-          <p class="eyebrow">FORGE HUD</p>
+          <p class="eyebrow">URU FORGE COMMAND</p>
           <h1 id="hud-title">Welcome back, Operator</h1>
         </div>
 
@@ -582,27 +753,68 @@
 
       <main class="hud-grid">
         <section class="panel directive-panel">
-          <div class="panel-header">
-            <p class="eyebrow">TODAY’S DIRECTIVE</p>
-            <h2 id="directive-title">Heavy Bench / Pull / Arms</h2>
-            <p id="directive-subtitle" class="muted">Primary objective for the current session.</p>
+          <div class="week-nav">
+            <p class="eyebrow">FOUR-WEEK PROTOCOL</p>
+            <h3 id="week-title">Week 1 // Ascent</h3>
+            <div class="week-banner">
+              <span>Current Forge Week:</span>
+              <span id="current-week-badge">1</span>
+            </div>
+
+            <div class="protocol-tags">
+              <span class="tag">5x5 base work</span>
+              <span class="tag">Ascent / Descent</span>
+              <span class="tag">Pyramid / Reverse Pyramid</span>
+              <span class="tag">Landmine integration</span>
+              <span class="tag">Pen-and-paper structure</span>
+            </div>
+
+            <div class="week-controls">
+              <button id="prev-week-btn" class="btn btn-ghost" type="button">Previous Week</button>
+              <button id="next-week-btn" class="btn btn-primary" type="button">Advance Week</button>
+            </div>
           </div>
 
           <div class="directive-layout">
-            <div class="directive-card">
-              <h3>Warmups</h3>
-              <ul id="warmup-list" class="clean-list"></ul>
+            <div class="sheet-card">
+              <div class="sheet-header">
+                <p class="eyebrow">FORGE DIRECTIVE</p>
+                <h3 id="directive-title">IRON PROTOCOL</h3>
+                <p id="directive-subtitle" class="sheet-sub">Week-specific training sheet.</p>
+              </div>
+
+              <div class="paper-table-wrap">
+                <table class="paper-table">
+                  <thead>
+                    <tr>
+                      <th>Lift</th>
+                      <th>Scheme</th>
+                      <th>Prescription</th>
+                      <th>Actual</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="paper-table-body"></tbody>
+                </table>
+              </div>
             </div>
 
-            <div class="directive-card">
-              <h3>Working Sets</h3>
-              <ul id="working-list" class="clean-list"></ul>
-            </div>
+            <div class="directive-side">
+              <div class="directive-card">
+                <h3>Warmup Sequence</h3>
+                <ul id="warmup-list" class="clean-list"></ul>
+              </div>
 
-            <div class="directive-card note-card">
-              <h3>Directive Notes</h3>
-              <textarea id="daily-notes" rows="6" placeholder="How did today move? Tight hips? Bench sharp? Deadlifts smooth?"></textarea>
-              <button id="save-notes-btn" class="btn btn-primary" type="button">Save Notes</button>
+              <div class="directive-card">
+                <h3>Forge Notes</h3>
+                <ul id="focus-list" class="clean-list"></ul>
+              </div>
+
+              <div class="directive-card note-card">
+                <h3>Directive Notes</h3>
+                <textarea id="daily-notes" rows="6" placeholder="How did the bar move? Any hip/adductor issue? Bench groove? Landmine path smooth?"></textarea>
+                <button id="save-notes-btn" class="btn btn-primary" type="button">Save Notes</button>
+              </div>
             </div>
           </div>
         </section>
@@ -617,6 +829,10 @@
             <div class="stat-card">
               <span class="stat-label">Cycle</span>
               <strong id="stat-cycle">Cycle 01</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Week</span>
+              <strong id="stat-week">1</strong>
             </div>
             <div class="stat-card">
               <span class="stat-label">Bench</span>
@@ -637,12 +853,7 @@
 
             <div class="field">
               <span>Exercise</span>
-              <select id="log-exercise">
-                <option value="Bench Press">Bench Press</option>
-                <option value="Back Squat">Back Squat</option>
-                <option value="Snatch-Grip Deadlift">Snatch-Grip Deadlift</option>
-                <option value="Barbell Curl">Barbell Curl</option>
-              </select>
+              <select id="log-exercise"></select>
             </div>
 
             <div class="two-col">
@@ -653,7 +864,7 @@
 
               <label class="field">
                 <span>Reps</span>
-                <input id="log-reps" type="number" min="0" step="1" placeholder="3" />
+                <input id="log-reps" type="number" min="0" step="1" placeholder="5" />
               </label>
             </div>
 
@@ -692,15 +903,17 @@
 
   <script>
     (() => {
-      const STORAGE_KEY = "uru_strength_forge_singlefile_v1";
+      const STORAGE_KEY = "uru_strength_forge_protocol_v2";
 
       const defaultData = {
+        week: 1,
         profile: {
           name: "",
-          cycleName: "Cycle 01 // Base Build",
+          cycleName: "Cycle 01 // URU Ascent",
           benchMax: 225,
           squatMax: 315,
           deadliftMax: 285,
+          landmineBase: 45,
           profileNotes: ""
         },
         dailyNotes: "",
@@ -708,23 +921,27 @@
         archiveOpen: false
       };
 
+      function clone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+
       function getData() {
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
-          if (!raw) return JSON.parse(JSON.stringify(defaultData));
+          if (!raw) return clone(defaultData);
 
           const parsed = JSON.parse(raw);
           return {
-            ...JSON.parse(JSON.stringify(defaultData)),
+            ...clone(defaultData),
             ...parsed,
             profile: {
-              ...JSON.parse(JSON.stringify(defaultData.profile)),
+              ...clone(defaultData.profile),
               ...(parsed.profile || {})
             },
             logs: Array.isArray(parsed.logs) ? parsed.logs : []
           };
         } catch {
-          return JSON.parse(JSON.stringify(defaultData));
+          return clone(defaultData);
         }
       }
 
@@ -734,7 +951,246 @@
 
       function resetData() {
         localStorage.removeItem(STORAGE_KEY);
-        return JSON.parse(JSON.stringify(defaultData));
+        return clone(defaultData);
+      }
+
+      function roundToNearest5(value) {
+        return Math.max(5, Math.round(value / 5) * 5);
+      }
+
+      function pct(value, decimal) {
+        return roundToNearest5(value * decimal);
+      }
+
+      const weekMap = {
+        1: {
+          name: "Week 1 // Ascent",
+          subtitle: "Build the base. Own clean 5x5 volume and groove.",
+          focus: [
+            "Keep bar speed clean and repeatable.",
+            "Leave 1–2 reps in reserve on main work.",
+            "Landmine work stays athletic, not sloppy.",
+            "Treat every set like pen-and-paper quality."
+          ],
+          warmups: [
+            "5 min general movement prep",
+            "Band shoulder activation x 15",
+            "Hip opener / adductor rockback x 8 each side",
+            "Thoracic opener x 8",
+            "Ramp to first main lift in even jumps"
+          ]
+        },
+        2: {
+          name: "Week 2 // Descent",
+          subtitle: "Heavier tension. Controlled descent and tighter positions.",
+          focus: [
+            "Own the eccentric on every main rep.",
+            "Brace harder before the first pull or press.",
+            "Stay explosive after the controlled lower.",
+            "Landmine arc should stay smooth and stacked."
+          ],
+          warmups: [
+            "5 min movement prep",
+            "Banded lat and shoulder warmup x 15",
+            "Adductor / glute activation x 8 each side",
+            "Tempo empty-bar warmups",
+            "Ramp with smaller jumps into work sets"
+          ]
+        },
+        3: {
+          name: "Week 3 // Pyramid",
+          subtitle: "Climb to the hardest week. Peak effort without losing shape.",
+          focus: [
+            "This is the hardest training week.",
+            "Pyramid work should build confidence, not chaos.",
+            "Top sets should feel earned and crisp.",
+            "Landmine work finishes the session with intent."
+          ],
+          warmups: [
+            "5–7 min movement prep",
+            "Shoulder / upper-back primer x 15",
+            "Hip / adductor flow x 8 each side",
+            "Bar path rehearsal on main lift",
+            "Progressive warmup ladder"
+          ]
+        },
+        4: {
+          name: "Week 4 // Reverse Pyramid",
+          subtitle: "Deload and sharpen. Touch intensity, reduce fatigue.",
+          focus: [
+            "Move well and leave the gym fresher.",
+            "Reverse pyramid should feel sharp, not draining.",
+            "Use landmine work to restore rhythm and posture.",
+            "Take notes on what carries into next cycle."
+          ],
+          warmups: [
+            "5 min movement prep",
+            "Light shoulder / hip activation",
+            "Mobility between ramps",
+            "Fewer total warmup jumps",
+            "Stay crisp, not exhausted"
+          ]
+        }
+      };
+
+      function buildWeekPlan(profile, week) {
+        const bench = Number(profile.benchMax) || 225;
+        const squat = Number(profile.squatMax) || 315;
+        const deadlift = Number(profile.deadliftMax) || 285;
+        const landmineBase = Number(profile.landmineBase) || 45;
+
+        const plans = {
+          1: [
+            {
+              lift: "Bench Press",
+              sub: "Main press",
+              scheme: "5x5",
+              prescription: `${pct(bench, 0.72)} x 5 x 5`,
+              notes: "Ascent week. Smooth volume."
+            },
+            {
+              lift: "Back Squat",
+              sub: "Primary lower",
+              scheme: "Ascent",
+              prescription: `${pct(squat, 0.60)} x 5, ${pct(squat, 0.65)} x 5, ${pct(squat, 0.70)} x 5, ${pct(squat, 0.72)} x 5, ${pct(squat, 0.75)} x 5`,
+              notes: "Build by feel without rushing."
+            },
+            {
+              lift: "Snatch-Grip Deadlift",
+              sub: "Upper-back pull emphasis",
+              scheme: "5x5",
+              prescription: `${pct(deadlift, 0.65)} x 5 x 5`,
+              notes: "Stay tight through upper back."
+            },
+            {
+              lift: "Landmine Press",
+              sub: "Athletic pressing",
+              scheme: "Ascent",
+              prescription: `${roundToNearest5(landmineBase)} x 8, ${roundToNearest5(landmineBase + 10)} x 8, ${roundToNearest5(landmineBase + 20)} x 8, ${roundToNearest5(landmineBase + 25)} x 8`,
+              notes: "Own arc and rib position."
+            },
+            {
+              lift: "Landmine Row",
+              sub: "Lat / upper-back finish",
+              scheme: "5x5",
+              prescription: `${roundToNearest5(landmineBase + 25)} x 5 x 5`,
+              notes: "Hard squeeze, no jerking."
+            }
+          ],
+          2: [
+            {
+              lift: "Bench Press",
+              sub: "Controlled eccentric",
+              scheme: "Descent",
+              prescription: `${pct(bench, 0.77)} x 5 x 5`,
+              notes: "3-second lower if it stays clean."
+            },
+            {
+              lift: "Back Squat",
+              sub: "Tension lower-body",
+              scheme: "Descent",
+              prescription: `${pct(squat, 0.77)} x 5 x 5`,
+              notes: "Stay braced and patient."
+            },
+            {
+              lift: "Snatch-Grip Deadlift",
+              sub: "Tempo pull",
+              scheme: "Descent",
+              prescription: `${pct(deadlift, 0.70)} x 5 x 5`,
+              notes: "Controlled down, violent up."
+            },
+            {
+              lift: "Landmine Press",
+              sub: "Half-kneeling or split stance",
+              scheme: "Descent",
+              prescription: `${roundToNearest5(landmineBase + 15)} x 8 x 4`,
+              notes: "Slow lower, stacked finish."
+            },
+            {
+              lift: "Landmine Rotation",
+              sub: "Core / sling integration",
+              scheme: "5x5",
+              prescription: `${roundToNearest5(landmineBase + 10)} x 5 each side x 5`,
+              notes: "Athletic, not sloppy."
+            }
+          ],
+          3: [
+            {
+              lift: "Bench Press",
+              sub: "Peak press week",
+              scheme: "Pyramid",
+              prescription: `${pct(bench, 0.70)} x 5, ${pct(bench, 0.75)} x 5, ${pct(bench, 0.80)} x 5, ${pct(bench, 0.85)} x 5, ${pct(bench, 0.88)} x 5`,
+              notes: "Climb with intent."
+            },
+            {
+              lift: "Back Squat",
+              sub: "Peak lower week",
+              scheme: "Pyramid",
+              prescription: `${pct(squat, 0.65)} x 5, ${pct(squat, 0.70)} x 5, ${pct(squat, 0.75)} x 5, ${pct(squat, 0.80)} x 5, ${pct(squat, 0.83)} x 5`,
+              notes: "Final set should be tough but clean."
+            },
+            {
+              lift: "Snatch-Grip Deadlift",
+              sub: "Peak pull week",
+              scheme: "Pyramid",
+              prescription: `${pct(deadlift, 0.65)} x 5, ${pct(deadlift, 0.70)} x 5, ${pct(deadlift, 0.75)} x 5, ${pct(deadlift, 0.80)} x 5, ${pct(deadlift, 0.83)} x 5`,
+              notes: "Upper back stays huge."
+            },
+            {
+              lift: "Landmine Press",
+              sub: "Loaded finish",
+              scheme: "Pyramid",
+              prescription: `${roundToNearest5(landmineBase + 10)} x 8, ${roundToNearest5(landmineBase + 20)} x 8, ${roundToNearest5(landmineBase + 30)} x 6, ${roundToNearest5(landmineBase + 40)} x 6`,
+              notes: "Drive hard through finish."
+            },
+            {
+              lift: "Landmine Row",
+              sub: "Back density",
+              scheme: "Reverse Pyramid",
+              prescription: `${roundToNearest5(landmineBase + 50)} x 6, ${roundToNearest5(landmineBase + 40)} x 8, ${roundToNearest5(landmineBase + 30)} x 10`,
+              notes: "Hard but controlled."
+            }
+          ],
+          4: [
+            {
+              lift: "Bench Press",
+              sub: "Deload press",
+              scheme: "Reverse Pyramid",
+              prescription: `${pct(bench, 0.75)} x 5, ${pct(bench, 0.70)} x 5, ${pct(bench, 0.65)} x 5`,
+              notes: "Sharp reps. Leave fresh."
+            },
+            {
+              lift: "Back Squat",
+              sub: "Deload lower",
+              scheme: "Reverse Pyramid",
+              prescription: `${pct(squat, 0.72)} x 5, ${pct(squat, 0.67)} x 5, ${pct(squat, 0.62)} x 5`,
+              notes: "Crisp positions."
+            },
+            {
+              lift: "Snatch-Grip Deadlift",
+              sub: "Deload pull",
+              scheme: "Reverse Pyramid",
+              prescription: `${pct(deadlift, 0.70)} x 5, ${pct(deadlift, 0.65)} x 5, ${pct(deadlift, 0.60)} x 5`,
+              notes: "Move well. No grinders."
+            },
+            {
+              lift: "Landmine Press",
+              sub: "Recovery patterning",
+              scheme: "5x5",
+              prescription: `${roundToNearest5(landmineBase + 10)} x 5 x 5`,
+              notes: "Fast and clean."
+            },
+            {
+              lift: "Landmine Rotation",
+              sub: "Deload athletic finish",
+              scheme: "Reverse Pyramid",
+              prescription: `${roundToNearest5(landmineBase + 15)} x 6 each side, ${roundToNearest5(landmineBase + 10)} x 8 each side, ${roundToNearest5(landmineBase + 5)} x 10 each side`,
+              notes: "Restore rhythm."
+            }
+          ]
+        };
+
+        return plans[week] || plans[1];
       }
 
       const screens = {
@@ -753,17 +1209,23 @@
         benchMax: document.getElementById("benchMax"),
         squatMax: document.getElementById("squatMax"),
         deadliftMax: document.getElementById("deadliftMax"),
+        landmineBase: document.getElementById("landmineBase"),
         profileNotes: document.getElementById("profileNotes"),
 
         hudTitle: document.getElementById("hud-title"),
+        weekTitle: document.getElementById("week-title"),
+        currentWeekBadge: document.getElementById("current-week-badge"),
         directiveTitle: document.getElementById("directive-title"),
         directiveSubtitle: document.getElementById("directive-subtitle"),
         warmupList: document.getElementById("warmup-list"),
-        workingList: document.getElementById("working-list"),
+        focusList: document.getElementById("focus-list"),
+        paperTableBody: document.getElementById("paper-table-body"),
+
         dailyNotes: document.getElementById("daily-notes"),
         saveNotesBtn: document.getElementById("save-notes-btn"),
 
         statCycle: document.getElementById("stat-cycle"),
+        statWeek: document.getElementById("stat-week"),
         statBench: document.getElementById("stat-bench"),
         statSquat: document.getElementById("stat-squat"),
         statDeadlift: document.getElementById("stat-deadlift"),
@@ -772,6 +1234,9 @@
         logWeight: document.getElementById("log-weight"),
         logReps: document.getElementById("log-reps"),
         saveLiftBtn: document.getElementById("save-lift-btn"),
+
+        prevWeekBtn: document.getElementById("prev-week-btn"),
+        nextWeekBtn: document.getElementById("next-week-btn"),
 
         recentLifts: document.getElementById("recent-lifts"),
         archiveProfileNotes: document.getElementById("archive-profile-notes"),
@@ -788,11 +1253,11 @@
       let appData = getData();
 
       const loadingSteps = [
-        { pct: 18, text: "Powering core..." },
-        { pct: 38, text: "Syncing forge profile..." },
-        { pct: 62, text: "Loading directive engine..." },
+        { pct: 18, text: "Heating star-metal..." },
+        { pct: 38, text: "Shaping the forge sheet..." },
+        { pct: 62, text: "Tempering the four-week protocol..." },
         { pct: 84, text: "Unlocking archive..." },
-        { pct: 100, text: "Forge online." }
+        { pct: 100, text: "URU forged." }
       ];
 
       function showScreen(screenName) {
@@ -803,72 +1268,7 @@
       }
 
       function hasProfile() {
-        return Boolean(appData.profile && appData.profile.name && appData.profile.name.trim());
-      }
-
-      function roundToNearest5(value) {
-        return Math.round(value / 5) * 5;
-      }
-
-      function generateDirective(profile) {
-        const bench = Number(profile.benchMax) || 225;
-        const deadlift = Number(profile.deadliftMax) || 285;
-
-        const benchTop = roundToNearest5(bench * 0.85);
-        const benchBackoff = roundToNearest5(bench * 0.75);
-        const sgdlTop = roundToNearest5(deadlift * 0.8);
-        const sgdlBackoff = roundToNearest5(deadlift * 0.7);
-
-        return {
-          title: "Heavy Bench / Pull / Arms",
-          subtitle: "Sub-hour strength push with barbell focus and actual set tracking.",
-          warmups: [
-            "5 min movement prep",
-            "Band shoulder activation x 15",
-            "Hip opener / adductor rockback x 8 each side",
-            "Bench ramp: bar x 15, 95 x 8, 135 x 5, 165 x 3",
-            "Snatch-grip deadlift ramp: 95 x 5, 135 x 5, 185 x 3"
-          ],
-          working: [
-            `Bench Press — ${benchTop} x 3 for 3 sets`,
-            `Bench Backoff — ${benchBackoff} x 6 for 2 sets`,
-            `Snatch-Grip Deadlift — ${sgdlTop} x 5 for 3 sets`,
-            `SGDL Backoff — ${sgdlBackoff} x 6 for 2 sets`,
-            "Barbell Curl — challenging 8 to 12 reps for 3 sets"
-          ]
-        };
-      }
-
-      function renderDirective() {
-        const directive = generateDirective(appData.profile);
-
-        els.directiveTitle.textContent = directive.title;
-        els.directiveSubtitle.textContent = directive.subtitle;
-
-        els.warmupList.innerHTML = "";
-        directive.warmups.forEach((item) => {
-          const li = document.createElement("li");
-          li.textContent = item;
-          els.warmupList.appendChild(li);
-        });
-
-        els.workingList.innerHTML = "";
-        directive.working.forEach((item) => {
-          const li = document.createElement("li");
-          li.textContent = item;
-          els.workingList.appendChild(li);
-        });
-      }
-
-      function renderStats() {
-        const profile = appData.profile;
-        const name = profile.name && profile.name.trim() ? profile.name.trim() : "Operator";
-
-        els.hudTitle.textContent = `Welcome back, ${name}`;
-        els.statCycle.textContent = profile.cycleName || "Cycle 01";
-        els.statBench.textContent = profile.benchMax || 0;
-        els.statSquat.textContent = profile.squatMax || 0;
-        els.statDeadlift.textContent = profile.deadliftMax || 0;
+        return Boolean(appData.profile?.name?.trim());
       }
 
       function setArchiveState(isOpen) {
@@ -879,16 +1279,98 @@
         saveData(appData);
       }
 
+      function fillProfileForm() {
+        const profile = appData.profile || {};
+        els.name.value = profile.name || "";
+        els.cycleName.value = profile.cycleName || "";
+        els.benchMax.value = profile.benchMax || "";
+        els.squatMax.value = profile.squatMax || "";
+        els.deadliftMax.value = profile.deadliftMax || "";
+        els.landmineBase.value = profile.landmineBase || "";
+        els.profileNotes.value = profile.profileNotes || "";
+      }
+
+      function saveProfileFromForm() {
+        appData.profile = {
+          name: els.name.value.trim(),
+          cycleName: els.cycleName.value.trim() || "Cycle 01 // URU Ascent",
+          benchMax: Number(els.benchMax.value) || 225,
+          squatMax: Number(els.squatMax.value) || 315,
+          deadliftMax: Number(els.deadliftMax.value) || 285,
+          landmineBase: Number(els.landmineBase.value) || 45,
+          profileNotes: els.profileNotes.value.trim()
+        };
+        saveData(appData);
+      }
+
+      function renderStats() {
+        const profile = appData.profile || {};
+        const weekData = weekMap[appData.week] || weekMap[1];
+        const name = profile.name?.trim() || "Operator";
+
+        els.hudTitle.textContent = `Welcome back, ${name}`;
+        els.weekTitle.textContent = weekData.name;
+        els.currentWeekBadge.textContent = appData.week;
+        els.statCycle.textContent = profile.cycleName || "Cycle 01";
+        els.statWeek.textContent = appData.week;
+        els.statBench.textContent = profile.benchMax || 0;
+        els.statSquat.textContent = profile.squatMax || 0;
+        els.statDeadlift.textContent = profile.deadliftMax || 0;
+      }
+
+      function renderDirective() {
+        const weekData = weekMap[appData.week] || weekMap[1];
+        const plan = buildWeekPlan(appData.profile, appData.week);
+
+        els.directiveTitle.textContent = "Forge Directive: Iron Protocol";
+        els.directiveSubtitle.textContent = weekData.subtitle;
+
+        els.warmupList.innerHTML = "";
+        weekData.warmups.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          els.warmupList.appendChild(li);
+        });
+
+        els.focusList.innerHTML = "";
+        weekData.focus.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          els.focusList.appendChild(li);
+        });
+
+        els.paperTableBody.innerHTML = "";
+        els.logExercise.innerHTML = "";
+
+        plan.forEach((row) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>
+              <div class="lift-name">${row.lift}</div>
+              <div class="lift-sub">${row.sub}</div>
+            </td>
+            <td><span class="scheme-badge">${row.scheme}</span></td>
+            <td>${row.prescription}</td>
+            <td>
+              <span class="pen-line"></span>
+            </td>
+            <td class="notes-col">${row.notes}</td>
+          `;
+          els.paperTableBody.appendChild(tr);
+
+          const option = document.createElement("option");
+          option.value = row.lift;
+          option.textContent = row.lift;
+          els.logExercise.appendChild(option);
+        });
+      }
+
       function renderArchive() {
         els.archiveProfileNotes.textContent =
-          appData.profile.profileNotes && appData.profile.profileNotes.trim()
-            ? appData.profile.profileNotes.trim()
-            : "No forge notes saved yet.";
+          appData.profile?.profileNotes?.trim() || "No forge notes saved yet.";
 
         els.archiveDailyNotes.textContent =
-          appData.dailyNotes && appData.dailyNotes.trim()
-            ? appData.dailyNotes.trim()
-            : "No directive notes saved yet.";
+          appData.dailyNotes?.trim() || "No directive notes saved yet.";
 
         els.recentLifts.innerHTML = "";
 
@@ -898,11 +1380,11 @@
           empty.textContent = "No logged sets yet.";
           els.recentLifts.appendChild(empty);
         } else {
-          appData.logs.slice(0, 8).forEach((log) => {
+          appData.logs.slice(0, 10).forEach((log) => {
             const div = document.createElement("div");
             div.className = "log-item";
             div.innerHTML = `
-              <div class="top">${log.exercise}</div>
+              <div class="top">Week ${log.week} • ${log.exercise}</div>
               <div class="bottom">${log.weight} lbs x ${log.reps} reps</div>
             `;
             els.recentLifts.appendChild(div);
@@ -917,29 +1399,6 @@
         renderDirective();
         els.dailyNotes.value = appData.dailyNotes || "";
         renderArchive();
-      }
-
-      function fillProfileForm() {
-        const profile = appData.profile;
-        els.name.value = profile.name || "";
-        els.cycleName.value = profile.cycleName || "";
-        els.benchMax.value = profile.benchMax || "";
-        els.squatMax.value = profile.squatMax || "";
-        els.deadliftMax.value = profile.deadliftMax || "";
-        els.profileNotes.value = profile.profileNotes || "";
-      }
-
-      function saveProfileFromForm() {
-        appData.profile = {
-          name: els.name.value.trim(),
-          cycleName: els.cycleName.value.trim() || "Cycle 01 // Base Build",
-          benchMax: Number(els.benchMax.value) || 0,
-          squatMax: Number(els.squatMax.value) || 0,
-          deadliftMax: Number(els.deadliftMax.value) || 0,
-          profileNotes: els.profileNotes.value.trim()
-        };
-
-        saveData(appData);
       }
 
       function bootLoadingSequence() {
@@ -971,6 +1430,14 @@
         setTimeout(step, 250);
       }
 
+      function changeWeek(direction) {
+        appData.week += direction;
+        if (appData.week > 4) appData.week = 1;
+        if (appData.week < 1) appData.week = 4;
+        saveData(appData);
+        renderHud();
+      }
+
       els.profileForm.addEventListener("submit", (event) => {
         event.preventDefault();
         saveProfileFromForm();
@@ -995,10 +1462,11 @@
           exercise,
           weight,
           reps,
+          week: appData.week,
           timestamp: Date.now()
         });
 
-        appData.logs = appData.logs.slice(0, 20);
+        appData.logs = appData.logs.slice(0, 30);
         saveData(appData);
 
         els.logWeight.value = "";
@@ -1006,6 +1474,9 @@
 
         renderArchive();
       });
+
+      els.prevWeekBtn.addEventListener("click", () => changeWeek(-1));
+      els.nextWeekBtn.addEventListener("click", () => changeWeek(1));
 
       els.archiveToggle.addEventListener("click", () => {
         setArchiveState(!appData.archiveOpen);
@@ -1017,7 +1488,9 @@
       });
 
       els.resetAllBtn.addEventListener("click", () => {
-        const confirmed = window.confirm("Reset the full forge? This clears profile, notes, and logged sets.");
+        const confirmed = window.confirm(
+          "Reset the full forge? This clears profile, week progression, notes, and logged sets."
+        );
         if (!confirmed) return;
 
         appData = resetData();

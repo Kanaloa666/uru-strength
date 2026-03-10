@@ -1,54 +1,187 @@
 const state = loadAppData()
 
+// Screens
+const screenProfile = document.getElementById("screen-profile")
+const screenDashboard = document.getElementById("screen-dashboard")
+
+// Loading
+const loadingText = document.getElementById("loading-text")
+const loadingBar = document.getElementById("loading-bar")
+
+// Forms
 const profileForm = document.getElementById("profile-form")
 const dailyLogForm = document.getElementById("daily-log-form")
 const scorecardForm = document.getElementById("scorecard-form")
 
+// Dashboard UI
+const forgeHud = document.getElementById("forge-hud")
+const todayWorkout = document.getElementById("today-workout")
 const programOutput = document.getElementById("program-output")
+const toggleArchiveBtn = document.getElementById("toggle-archive")
+const prevWorkoutBtn = document.getElementById("prev-workout")
+const nextWorkoutBtn = document.getElementById("next-workout")
+const btnEditProfile = document.getElementById("btn-edit-profile")
+
+// Logs
 const logHistory = document.getElementById("log-history")
 const scorecardHistory = document.getElementById("scorecard-history")
 
-const todayWorkout = document.getElementById("today-workout")
-const forgeHud = document.getElementById("forge-hud")
-
-const prevWorkoutBtn = document.getElementById("prev-workout")
-const nextWorkoutBtn = document.getElementById("next-workout")
-const resetWorkoutChecksBtn = document.getElementById("reset-workout-checks")
-const toggleArchiveBtn = document.getElementById("toggle-archive")
-
-const loadingText = document.getElementById("loading-text")
-const loadingBar = document.getElementById("loading-bar")
-
 let archiveExpanded = false
 
-function renderLiftPreview(bigLift) {
-  const setLines = bigLift.sets
-    .map((set) => {
-      if (typeof set.weight === "string") {
-        return `<div class="directive-line">${set.weight} x ${set.reps}</div>`
+function showScreen(name){
+  if (name === "profile"){
+    screenProfile.classList.remove("hidden")
+    screenDashboard.classList.add("hidden")
+  } else {
+    screenProfile.classList.add("hidden")
+    screenDashboard.classList.remove("hidden")
+  }
+}
+
+function runLoadingSequence(){
+  const lines = [
+    "Initializing forge...",
+    "Binding Uru protocols...",
+    "Calibrating directive archive...",
+    "Tempering warpath...",
+    "Forge online."
+  ]
+  const widths = ["15%","35%","58%","82%","100%"]
+
+  let i = 0
+  if (loadingText) loadingText.textContent = lines[0]
+  if (loadingBar) loadingBar.style.width = widths[0]
+
+  const interval = setInterval(() => {
+    i++
+    if (i < lines.length){
+      if (loadingText) loadingText.textContent = lines[i]
+      if (loadingBar) loadingBar.style.width = widths[i]
+    } else {
+      clearInterval(interval)
+    }
+  }, 260)
+
+  setTimeout(() => {
+    const loading = document.getElementById("loading-screen")
+    if (loading) loading.style.display = "none"
+
+    // after loading, decide screen
+    if (state.profile?.maxes && state.program?.weeks?.length){
+      showScreen("dashboard")
+      renderAll()
+    } else {
+      showScreen("profile")
+    }
+  }, 1300)
+}
+
+function getCurrent(){
+  if (!state.program?.weeks?.length) return null
+  const wi = state.currentWorkout?.weekIndex ?? 0
+  const di = state.currentWorkout?.dayIndex ?? 0
+  const week = state.program.weeks[wi]
+  const day = week?.days?.[di]
+  if (!week || !day) return null
+  return { week, day, wi, di }
+}
+
+function renderForgeHud(){
+  if (!forgeHud){
+    return
+  }
+  if (!state.program?.weeks?.length){
+    forgeHud.innerHTML = "<p>No cycle forged yet.</p>"
+    return
+  }
+
+  const current = getCurrent()
+  if (!current){
+    forgeHud.innerHTML = "<p>No directive loaded yet.</p>"
+    return
+  }
+
+  const total = state.program.weeks.reduce((sum,w)=>sum + w.days.length, 0)
+
+  let count = 0
+  let found = false
+  for (let i=0;i<state.program.weeks.length;i++){
+    for (let j=0;j<state.program.weeks[i].days.length;j++){
+      count++
+      if (i===current.wi && j===current.di){
+        found = true
+        break
       }
-      return `<div class="directive-line">${set.weight} x ${set.reps}</div>`
-    })
-    .join("")
+    }
+    if (found) break
+  }
+
+  const pct = Math.round((count/total)*100)
+  const isBoss = (current.day.title || "").toLowerCase().includes("infinity forge")
+
+  forgeHud.innerHTML = `
+    <div class="hud-grid">
+      <div class="hud-item">
+        <div class="hud-label">Cycle Phase</div>
+        <div class="hud-value">${current.week.name}</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Directive</div>
+        <div class="hud-value">${current.day.title}</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Count</div>
+        <div class="hud-value">${count} / ${total}</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Progress</div>
+        <div class="hud-value">${pct}%</div>
+      </div>
+    </div>
+
+    <div class="progress-shell">
+      <div class="progress-fill" style="width:${pct}%"></div>
+    </div>
+
+    ${isBoss ? `<div class="boss-warning">FINAL BOSS ACTIVE — Save Reforging Record to set new numbers.</div>` : ""}
+  `
+}
+
+function liftPreview(bigLift){
+  const sets = (bigLift.sets || []).map(s => {
+    if (typeof s.weight === "string") return `<div class="directive-line">${s.weight} x ${s.reps}</div>`
+    return `<div class="directive-line">${s.weight} x ${s.reps}</div>`
+  }).join("")
 
   return `
     <div class="directive-block">
       <div class="directive-label">${bigLift.lift}</div>
       ${bigLift.notes ? `<div class="muted-text">${bigLift.notes}</div>` : ""}
-      ${setLines}
+      ${sets}
     </div>
   `
 }
 
-function renderDirectiveBody(day) {
-  if (day.infinityForge) {
-    const boss = day.infinityForge
+function renderDirective(){
+  if (!todayWorkout) return
 
-    return `
-      <div class="boss-warning">FINAL BOSS ACTIVE — Record top sets. These become your new numbers.</div>
+  const current = getCurrent()
+  if (!current){
+    todayWorkout.innerHTML = "<p>No directive loaded yet.</p>"
+    return
+  }
+
+  const { week, day } = current
+
+  if (day.infinityForge){
+    const boss = day.infinityForge
+    todayWorkout.innerHTML = `
+      <h3>Cycle Phase: ${week.name}</h3>
+      <p class="muted-text">${week.focus}</p>
+      <div class="boss-warning">FINAL BOSS — record top sets in Reforging Record.</div>
 
       <div class="directive-stack">
-        ${boss.bigLifts.map(renderLiftPreview).join("")}
+        ${boss.bigLifts.map(liftPreview).join("")}
 
         <div class="directive-block">
           <div class="directive-label">Forge Movement</div>
@@ -58,15 +191,20 @@ function renderDirectiveBody(day) {
 
         <div class="directive-block">
           <div class="directive-label">Titan Circuit</div>
-          ${boss.titanCircuit.map(item => `<div class="directive-line">${item.name} — ${item.prescription}</div>`).join("")}
+          ${boss.titanCircuit.map(i => `<div class="directive-line">${i.name} — ${i.prescription}</div>`).join("")}
         </div>
       </div>
     `
+    return
   }
 
-  return `
+  todayWorkout.innerHTML = `
+    <h3>Cycle Phase: ${week.name}</h3>
+    <p><strong>${day.title}</strong></p>
+    <p class="muted-text">${day.flavor || week.focus}</p>
+
     <div class="directive-stack">
-      ${day.bigLifts.map(renderLiftPreview).join("")}
+      ${day.bigLifts.map(liftPreview).join("")}
 
       <div class="directive-block">
         <div class="directive-label">Forge Movement</div>
@@ -88,19 +226,21 @@ function renderDirectiveBody(day) {
   `
 }
 
-function renderProgram() {
-  if (!state.program) {
-    programOutput.innerHTML = "<p>No cycle forged yet.</p>"
+function renderArchive(){
+  if (!programOutput) return
+
+  if (!state.program?.weeks?.length){
+    programOutput.innerHTML = "<p>No archive yet.</p>"
     return
   }
 
   programOutput.className = archiveExpanded ? "archive-expanded" : "archive-collapsed"
 
-  programOutput.innerHTML = state.program.weeks.map((week) => `
+  programOutput.innerHTML = state.program.weeks.map(week => `
     <div class="nested-card">
       <h3>Week ${week.number} — ${week.name}</h3>
       <p class="muted-text">${week.focus}</p>
-      ${week.days.map((day) => `
+      ${week.days.map(day => `
         <div class="directive-block">
           <div class="directive-label">${day.title}</div>
           <div class="directive-line">${day.flavor || week.focus}</div>
@@ -109,219 +249,87 @@ function renderProgram() {
     </div>
   `).join("")
 
-  if (toggleArchiveBtn) {
-    toggleArchiveBtn.textContent = archiveExpanded ? "Collapse Archive" : "Expand Archive"
+  if (toggleArchiveBtn){
+    toggleArchiveBtn.textContent = archiveExpanded ? "Collapse" : "Expand"
   }
 }
 
-function getCurrentWeekAndDay() {
-  if (!state.program) return null
-
-  const weekIndex = state.currentWorkout?.weekIndex || 0
-  const dayIndex = state.currentWorkout?.dayIndex || 0
-
-  const week = state.program.weeks?.[weekIndex]
-  const day = week?.days?.[dayIndex]
-
-  if (!week || !day) return null
-
-  return { week, day, weekIndex, dayIndex }
-}
-
-function renderForgeHud() {
-  if (!state.program || !forgeHud) {
-    if (forgeHud) forgeHud.innerHTML = "<p>No cycle forged yet.</p>"
+function renderLogs(){
+  if (!logHistory) return
+  if (!state.logs?.length){
+    logHistory.innerHTML = "<p class='muted-text'>No war logs yet.</p>"
     return
   }
-
-  const current = getCurrentWeekAndDay()
-  if (!current) {
-    forgeHud.innerHTML = "<p>No directive loaded yet.</p>"
-    return
-  }
-
-  const totalDirectives = state.program.weeks.reduce((sum, week) => sum + week.days.length, 0)
-
-  let currentDirectiveNumber = 0
-  let found = false
-
-  for (let i = 0; i < state.program.weeks.length; i++) {
-    for (let j = 0; j < state.program.weeks[i].days.length; j++) {
-      currentDirectiveNumber++
-      if (i === current.weekIndex && j === current.dayIndex) {
-        found = true
-        break
-      }
-    }
-    if (found) break
-  }
-
-  const progressPercent = Math.round((currentDirectiveNumber / totalDirectives) * 100)
-
-  const bossWarning = current.day.title?.toLowerCase().includes("infinity forge")
-    ? `<div class="boss-warning">FINAL BOSS ACTIVE — Reforging Record will set your next cycle maxes.</div>`
-    : ""
-
-  forgeHud.innerHTML = `
-    <div class="hud-grid">
-      <div class="hud-item">
-        <div class="hud-label">Cycle Phase</div>
-        <div class="hud-value">${current.week.name}</div>
-      </div>
-
-      <div class="hud-item">
-        <div class="hud-label">Directive</div>
-        <div class="hud-value">${current.day.title}</div>
-      </div>
-
-      <div class="hud-item">
-        <div class="hud-label">Directive Count</div>
-        <div class="hud-value">${currentDirectiveNumber} / ${totalDirectives}</div>
-      </div>
-
-      <div class="hud-item">
-        <div class="hud-label">Progress</div>
-        <div class="hud-value">${progressPercent}%</div>
-      </div>
+  logHistory.innerHTML = state.logs.slice().reverse().map(l => `
+    <div class="nested-card">
+      <strong>${l.date}</strong> — ${l.workout}<br>
+      Bodyweight: ${l.bodyweight || "-"}<br>
+      Notes: ${l.notes || ""}
     </div>
+  `).join("")
+}
 
-    <div class="progress-shell">
-      <div class="progress-fill" style="width:${progressPercent}%"></div>
+function renderScorecards(){
+  if (!scorecardHistory) return
+  if (!state.scorecards?.length){
+    scorecardHistory.innerHTML = "<p class='muted-text'>No reforging records yet.</p>"
+    return
+  }
+  scorecardHistory.innerHTML = state.scorecards.slice().reverse().map(c => `
+    <div class="nested-card">
+      <strong>${c.date}</strong><br>
+      Bodyweight: ${c.bodyweight}<br>
+      Bench top: ${c.benchTop}<br>
+      SGDL top: ${c.sgdlTop}<br>
+      Thruster load: ${c.thrusterLoad}<br>
+      Thruster time: ${c.thrusterTime}<br>
+      Circuit rounds: ${c.circuitRounds}<br>
+      Notes: ${c.notes}
     </div>
-
-    ${bossWarning}
-  `
+  `).join("")
 }
 
-function renderTodayWorkout() {
-  if (!state.program) {
-    todayWorkout.innerHTML = "<p>No directive loaded yet.</p>"
-    return
-  }
-
-  const current = getCurrentWeekAndDay()
-  if (!current) {
-    todayWorkout.innerHTML = "<p>No directive loaded yet.</p>"
-    return
-  }
-
-  const { week, day } = current
-
-  todayWorkout.innerHTML = `
-    <h3 class="today-title">Cycle Phase: ${week.name}</h3>
-    <p class="today-subtitle">${day.title}</p>
-    <p class="muted-text">${day.flavor || week.focus}</p>
-    ${renderDirectiveBody(day)}
-  `
+function renderAll(){
+  renderForgeHud()
+  renderDirective()
+  renderArchive()
+  renderLogs()
+  renderScorecards()
 }
 
-function moveWorkout(direction) {
-  if (!state.program || !state.program.weeks) return
+function moveWorkout(dir){
+  if (!state.program?.weeks?.length) return
 
-  let weekIndex = state.currentWorkout?.weekIndex || 0
-  let dayIndex = state.currentWorkout?.dayIndex || 0
+  let wi = state.currentWorkout?.weekIndex ?? 0
+  let di = state.currentWorkout?.dayIndex ?? 0
 
-  if (direction === 1) {
-    dayIndex++
-    if (dayIndex >= state.program.weeks[weekIndex].days.length) {
-      dayIndex = 0
-      weekIndex++
-      if (weekIndex >= state.program.weeks.length) {
-        weekIndex = state.program.weeks.length - 1
-        dayIndex = state.program.weeks[weekIndex].days.length - 1
+  if (dir === 1){
+    di++
+    if (di >= state.program.weeks[wi].days.length){
+      di = 0
+      wi++
+      if (wi >= state.program.weeks.length){
+        wi = state.program.weeks.length - 1
+        di = state.program.weeks[wi].days.length - 1
       }
     }
   } else {
-    dayIndex--
-    if (dayIndex < 0) {
-      weekIndex--
-      if (weekIndex < 0) {
-        weekIndex = 0
-        dayIndex = 0
+    di--
+    if (di < 0){
+      wi--
+      if (wi < 0){
+        wi = 0
+        di = 0
       } else {
-        dayIndex = state.program.weeks[weekIndex].days.length - 1
+        di = state.program.weeks[wi].days.length - 1
       }
     }
   }
 
-  state.currentWorkout = { weekIndex, dayIndex }
+  state.currentWorkout = { weekIndex: wi, dayIndex: di }
   saveAppData(state)
-  renderTodayWorkout()
   renderForgeHud()
-}
-
-function renderLogs() {
-  if (!state.logs.length) {
-    logHistory.innerHTML = "<p>No war logs yet.</p>"
-    return
-  }
-
-  logHistory.innerHTML = state.logs
-    .slice()
-    .reverse()
-    .map(log => `
-      <div class="nested-card">
-        <strong>${log.date}</strong> — ${log.workout}<br>
-        Bodyweight: ${log.bodyweight || "-"}<br>
-        Notes: ${log.notes || ""}
-      </div>
-    `)
-    .join("")
-}
-
-function renderScorecards() {
-  if (!state.scorecards.length) {
-    scorecardHistory.innerHTML = "<p>No reforging records yet.</p>"
-    return
-  }
-
-  scorecardHistory.innerHTML = state.scorecards
-    .slice()
-    .reverse()
-    .map(card => `
-      <div class="nested-card">
-        <strong>${card.date}</strong><br>
-        Bodyweight: ${card.bodyweight}<br>
-        Bench top: ${card.benchTop}<br>
-        SGDL / Deadlift top: ${card.sgdlTop}<br>
-        Thruster load: ${card.thrusterLoad}<br>
-        Thruster time: ${card.thrusterTime}<br>
-        Circuit rounds: ${card.circuitRounds}<br>
-        Notes: ${card.notes}
-      </div>
-    `)
-    .join("")
-}
-
-function runLoadingSequence() {
-  const lines = [
-    "Initializing forge...",
-    "Binding Uru protocols...",
-    "Calibrating directive archive...",
-    "Tempering warpath...",
-    "Forge online."
-  ]
-
-  const widths = ["15%", "35%", "58%", "82%", "100%"]
-
-  let i = 0
-  if (loadingText) loadingText.textContent = lines[0]
-  if (loadingBar) loadingBar.style.width = widths[0]
-
-  const interval = setInterval(() => {
-    i++
-    if (i < lines.length) {
-      if (loadingText) loadingText.textContent = lines[i]
-      if (loadingBar) loadingBar.style.width = widths[i]
-    } else {
-      clearInterval(interval)
-    }
-  }, 320)
-
-  setTimeout(() => {
-    const loading = document.getElementById("loading-screen")
-    if (loading) loading.style.display = "none"
-  }, 1800)
+  renderDirective()
 }
 
 profileForm?.addEventListener("submit", (e) => {
@@ -344,21 +352,32 @@ profileForm?.addEventListener("submit", (e) => {
 
   saveAppData(state)
 
-  renderProgram()
-  renderTodayWorkout()
-  renderForgeHud()
+  // Jump to dashboard after forging
+  showScreen("dashboard")
+  renderAll()
+})
+
+btnEditProfile?.addEventListener("click", () => {
+  showScreen("profile")
+})
+
+prevWorkoutBtn?.addEventListener("click", () => moveWorkout(-1))
+nextWorkoutBtn?.addEventListener("click", () => moveWorkout(1))
+
+toggleArchiveBtn?.addEventListener("click", () => {
+  archiveExpanded = !archiveExpanded
+  renderArchive()
 })
 
 dailyLogForm?.addEventListener("submit", (e) => {
   e.preventDefault()
-
+  state.logs = state.logs || []
   state.logs.push({
     date: document.getElementById("log-date").value,
-    bodyweight: document.getElementById("log-bodyweight").value,
+    bodyweight: Number(document.getElementById("log-bodyweight").value || 0),
     workout: document.getElementById("log-workout").value,
     notes: document.getElementById("log-notes").value
   })
-
   saveAppData(state)
   renderLogs()
   dailyLogForm.reset()
@@ -378,42 +397,23 @@ scorecardForm?.addEventListener("submit", (e) => {
     notes: document.getElementById("score-notes").value
   })
 
+  state.scorecards = state.scorecards || []
   state.scorecards.push(newCard)
+
   applyNewMaxesFromScorecard(state, newCard)
 
-  if (state.profile?.maxes) {
+  // Reforge
+  if (state.profile?.maxes){
     state.program = generateProgram(state.profile.maxes)
     state.currentWorkout = { weekIndex: 0, dayIndex: 0 }
   }
 
   saveAppData(state)
 
-  renderProgram()
-  renderTodayWorkout()
-  renderForgeHud()
-  renderScorecards()
-
+  // stay on dashboard and refresh
+  showScreen("dashboard")
+  renderAll()
   scorecardForm.reset()
 })
 
-prevWorkoutBtn?.addEventListener("click", () => moveWorkout(-1))
-nextWorkoutBtn?.addEventListener("click", () => moveWorkout(1))
-
-resetWorkoutChecksBtn?.addEventListener("click", () => {
-  state.currentWorkout = { weekIndex: 0, dayIndex: 0 }
-  saveAppData(state)
-  renderTodayWorkout()
-  renderForgeHud()
-})
-
-toggleArchiveBtn?.addEventListener("click", () => {
-  archiveExpanded = !archiveExpanded
-  renderProgram()
-})
-
 runLoadingSequence()
-renderProgram()
-renderTodayWorkout()
-renderForgeHud()
-renderLogs()
-renderScorecards()

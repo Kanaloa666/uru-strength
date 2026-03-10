@@ -155,7 +155,6 @@
       font-weight: 700;
     }
 
-    /* LOADING */
     .reactor-wrap {
       min-height: calc(100vh - 24px);
       display: grid;
@@ -242,7 +241,6 @@
       font-size: 0.95rem;
     }
 
-    /* OPERATOR SELECT */
     .operator-panel,
     .profile-panel {
       max-width: 900px;
@@ -340,7 +338,6 @@
       flex-wrap: wrap;
     }
 
-    /* HUD */
     .topbar {
       display: flex;
       justify-content: space-between;
@@ -737,7 +734,7 @@
         </div>
 
         <div class="loading-copy">
-          <p class="eyebrow">HELLFIRE CAMPAIGN ENGINE</p>
+          <p class="eyebrow">OMEGA FORGE</p>
           <h1>Summoning Mephisto’s Rage</h1>
           <p class="muted">Hellfire protocols awakening. The first campaign begins.</p>
         </div>
@@ -822,7 +819,7 @@
     <section id="hud-screen" class="screen">
       <header class="topbar wrap">
         <div>
-          <p class="eyebrow">GUARDIANS COMMAND</p>
+          <p class="eyebrow">OMEGA FORGE</p>
           <h1 id="hud-title">Welcome back, Operator</h1>
         </div>
 
@@ -1007,7 +1004,7 @@
         </section>
 
         <p class="footline">
-          V3 hellfire theme active. Month 1 = Mephisto’s Rage. Month 2 = Chronovium Surge.
+          Omega Forge V3 active. Month 1 = Mephisto’s Rage. Month 2 = Chronovium Surge.
         </p>
       </main>
     </section>
@@ -1015,7 +1012,7 @@
 
   <script>
     (() => {
-      const STORAGE_KEY = "guardians_directive_engine_v3";
+      const STORAGE_KEY = "omega_forge_v3";
 
       const arcPool = [
         "Mephisto’s Rage",
@@ -1443,7 +1440,7 @@
           div.className = "operator-card";
           div.innerHTML = `
             <h3>No operators yet</h3>
-            <div class="operator-meta">Create your first operator to start the campaign engine.</div>
+            <div class="operator-meta">Create your first operator to start Omega Forge.</div>
           `;
           els.operatorGrid.appendChild(div);
           return;
@@ -1958,9 +1955,6 @@
       els.runRemaxBtn.addEventListener("click", runRemaxAndAdvanceMonth);
 
       els.archiveToggle.addEventListener("click", toggleArchive);
-
-      let rootData = getRootData();
-      let editingOperatorId = "";
 
       bootLoadingSequence();
     })();

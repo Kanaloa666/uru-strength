@@ -1,11 +1,15 @@
-const URU_STORAGE_KEY = "uru_strength_v1";
+const URU_STORAGE_KEY = "uru_strength_v2";
 
 function getDefaultData() {
   return {
     profile: null,
     program: null,
     logs: [],
-    scorecards: []
+    scorecards: [],
+    currentWorkout: {
+      weekIndex: 0,
+      dayIndex: 0
+    }
   };
 }
 

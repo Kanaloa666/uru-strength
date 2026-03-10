@@ -1,398 +1,1574 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Vibranium Protocol</title>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <title>Villain Arc Training Engine</title>
+  <meta name="theme-color" content="#090b10" />
+  <style>
+    :root {
+      --bg: #080a0f;
+      --bg2: #0f1420;
+      --panel: rgba(17, 22, 34, 0.92);
+      --panel-2: rgba(10, 14, 22, 0.96);
+      --line: rgba(166, 72, 255, 0.22);
+      --line-2: rgba(122, 230, 255, 0.16);
+      --text: #edf1ff;
+      --muted: #a7b1ca;
+      --accent: #b05cff;
+      --accent-2: #7ae6ff;
+      --accent-3: #ff6b9d;
+      --good: #8cffb0;
+      --warn: #ffd166;
+      --danger: #ff7676;
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
+      --radius: 22px;
+      --radius-sm: 14px;
+      --maxw: 1180px;
+    }
 
-<style>
+    * {
+      box-sizing: border-box;
+    }
 
-body{
-font-family:Arial;
-background:#0a0f18;
-color:white;
-padding:30px;
-}
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top, rgba(176, 92, 255, 0.16), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(122, 230, 255, 0.08), transparent 20%),
+        linear-gradient(180deg, #05070c 0%, #090c13 38%, #0d121b 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-h1{
-color:#7ef2ff;
-}
+    body {
+      min-height: 100vh;
+    }
 
-button{
-padding:10px 16px;
-margin:5px;
-background:#66a3ff;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
 
-input{
-padding:6px;
-width:120px;
-}
+    button {
+      cursor: pointer;
+    }
 
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
+    .app-shell {
+      width: 100%;
+      min-height: 100vh;
+      padding: 14px;
+    }
 
-td,th{
-border:1px solid #222;
-padding:10px;
-}
+    .screen {
+      display: none;
+      min-height: calc(100vh - 28px);
+    }
 
-th{
-background:#111;
-color:#7ef2ff;
-}
+    .screen.active {
+      display: block;
+    }
 
-.workoutButton{
-background:#222;
-color:white;
-}
+    .loading-wrap,
+    .profile-panel,
+    .topbar,
+    .hud-grid {
+      width: min(var(--maxw), 100%);
+      margin: 0 auto;
+    }
 
-.activeWorkout{
-background:#66a3ff;
-color:black;
-}
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 0.76rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+    }
 
-.section{
-margin-top:20px;
-}
+    .muted {
+      color: var(--muted);
+    }
 
-</style>
+    .panel {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: #fff;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.98;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #08101a;
+      font-weight: 800;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-danger {
+      background: rgba(255, 118, 118, 0.16);
+      color: #ffd6d6;
+      border: 1px solid rgba(255, 118, 118, 0.14);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(176, 92, 255, 0.16);
+      color: var(--text);
+    }
+
+    .btn-tab.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-3));
+      color: #120915;
+      font-weight: 800;
+    }
+
+    /* loading */
+    .loading-wrap {
+      min-height: calc(100vh - 28px);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      gap: 24px;
+    }
+
+    .loading-core {
+      position: relative;
+      width: 190px;
+      height: 190px;
+    }
+
+    .ring,
+    .core {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+
+    .ring-1 {
+      border: 3px solid rgba(176, 92, 255, 0.58);
+      box-shadow: 0 0 26px rgba(176, 92, 255, 0.2);
+      animation: spin 4.2s linear infinite;
+    }
+
+    .ring-2 {
+      inset: 16px;
+      border: 3px dashed rgba(122, 230, 255, 0.7);
+      animation: spin-reverse 3.1s linear infinite;
+    }
+
+    .ring-3 {
+      inset: 36px;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .core {
+      inset: 56px;
+      background:
+        radial-gradient(circle,
+          rgba(255, 107, 157, 0.92) 0%,
+          rgba(176, 92, 255, 0.55) 40%,
+          rgba(122, 230, 255, 0.10) 72%,
+          transparent 100%);
+      box-shadow:
+        0 0 26px rgba(176, 92, 255, 0.38),
+        0 0 56px rgba(255, 107, 157, 0.18);
+    }
+
+    .loading-copy h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1.03;
+    }
+
+    .progress-block {
+      width: min(480px, 100%);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      border: 1px solid rgba(176, 92, 255, 0.16);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+      transition: width 0.35s ease;
+      box-shadow: 0 0 24px rgba(176, 92, 255, 0.32);
+    }
+
+    .progress-text {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    /* profile */
+    .profile-panel {
+      max-width: 860px;
+      margin-top: 24px;
+      padding: 22px;
+    }
+
+    .panel-header h2,
+    .topbar h1,
+    .sheet-header h2,
+    .card h3,
+    .archive-block h3,
+    .profile-panel h2 {
+      margin: 0;
+    }
+
+    .panel-header {
+      margin-bottom: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(176, 92, 255, 0.14);
+      background: rgba(8, 12, 19, 0.92);
+      color: var(--text);
+      padding: 13px 14px;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: rgba(122, 230, 255, 0.48);
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+
+    /* hud */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hud-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero-panel,
+    .sheet-panel,
+    .status-panel,
+    .archive-panel {
+      padding: 18px;
+    }
+
+    .arc-banner {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(176, 92, 255, 0.18);
+      background:
+        linear-gradient(180deg, rgba(176, 92, 255, 0.08), rgba(255, 255, 255, 0.02));
+    }
+
+    .arc-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(122, 230, 255, 0.08);
+      border: 1px solid rgba(122, 230, 255, 0.16);
+      color: var(--accent-2);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .phase-name {
+      color: var(--accent-3);
+      font-weight: 800;
+    }
+
+    .week-controls,
+    .directive-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1.4fr 0.96fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .sheet-card,
+    .card,
+    .archive-block {
+      border: 1px solid rgba(176, 92, 255, 0.14);
+      background: rgba(10, 14, 22, 0.84);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .sheet-header {
+      padding: 16px;
+      border-bottom: 1px solid rgba(176, 92, 255, 0.14);
+      background: linear-gradient(180deg, rgba(255, 107, 157, 0.05), rgba(255,255,255,0.02));
+    }
+
+    .sheet-header p {
+      margin: 8px 0 0;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .paper-table {
+      width: 100%;
+      min-width: 860px;
+      border-collapse: collapse;
+    }
+
+    .paper-table th,
+    .paper-table td {
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .paper-table th {
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .lift-name {
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .lift-sub {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .actual-input {
+      width: 100%;
+      min-width: 180px;
+      border-radius: 10px;
+      border: 1px solid rgba(176, 92, 255, 0.14);
+      background: rgba(8, 12, 19, 0.94);
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    .actual-input:focus {
+      border-color: rgba(122, 230, 255, 0.38);
+    }
+
+    .card {
+      padding: 16px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .clean-list {
+      list-style: none;
+      margin: 12px 0 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .clean-list li {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .notes-box {
+      display: grid;
+      gap: 12px;
+    }
+
+    .notes-box textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat-card {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(176, 92, 255, 0.14);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 7px;
+    }
+
+    .stat-card strong {
+      font-size: 1.02rem;
+    }
+
+    .status-block {
+      margin-top: 10px;
+      border-top: 1px solid rgba(176, 92, 255, 0.12);
+      padding-top: 16px;
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .mini-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .archive-toggle {
+      width: 100%;
+      border: 1px solid rgba(176, 92, 255, 0.14);
+      background: rgba(10, 14, 22, 0.84);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+    }
+
+    .archive-content {
+      overflow: hidden;
+      transition: max-height 0.28s ease, opacity 0.22s ease, margin-top 0.22s ease;
+      max-height: 1800px;
+      opacity: 1;
+      margin-top: 12px;
+    }
+
+    .archive-content.collapsed {
+      max-height: 0;
+      opacity: 0;
+      margin-top: 0;
+    }
+
+    .archive-inner {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stack-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .log-item {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(176, 92, 255, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .log-item .top {
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .log-item .bottom {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .remax-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .footline {
+      margin-top: 12px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes spin-reverse {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.97); opacity: 0.62; }
+      50% { transform: scale(1.03); opacity: 1; }
+    }
+
+    @media (max-width: 1080px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app-shell {
+        padding: 10px;
+      }
+
+      .screen,
+      .loading-wrap {
+        min-height: calc(100vh - 20px);
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .topbar-actions {
+        width: 100%;
+      }
+
+      .topbar-actions .btn {
+        flex: 1;
+      }
+
+      .form-grid,
+      .status-row,
+      .remax-row {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .loading-core {
+        width: 150px;
+        height: 150px;
+      }
+
+      .paper-table {
+        min-width: 760px;
+      }
+
+      .loading-copy h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </head>
-
-
 <body>
-
-<h1 id="protocolTitle">Month Protocol</h1>
-
-<div>
-<button onclick="changeWeek(-1)">Previous Week</button>
-<button onclick="changeWeek(1)">Next Week</button>
-</div>
-
-<h2 id="weekTitle"></h2>
-
-<div id="workoutButtons"></div>
-
-<div class="section">
-<h3 id="workoutTitle"></h3>
-<p id="workoutSubtitle"></p>
-</div>
-
-<div class="section">
-<h3>Warmup</h3>
-<ul id="warmupList"></ul>
-</div>
-
-<div class="section">
-<h3>Session Intent</h3>
-<ul id="focusList"></ul>
-</div>
-
-<table>
-
-<thead>
-<tr>
-<th>Directive</th>
-<th>Charge</th>
-<th>Target Load</th>
-<th>Actual</th>
-<th>Notes</th>
-</tr>
-</thead>
-
-<tbody id="liftTable"></tbody>
-
-</table>
-
-<script>
-
-
-function round5(x){
-return Math.round(x/5)*5
-}
-
-let data=JSON.parse(localStorage.getItem("vibraniumProtocol"))||{
-
-week:1,
-workout:0,
-
-bench:225,
-squat:315,
-dead:285,
-
-landmine:45,
-kettlebell:35,
-
-actual:{}
-
-}
-
-function save(){
-
-localStorage.setItem("vibraniumProtocol",JSON.stringify(data))
-
-}
-
-
-function changeWeek(dir){
-
-data.week+=dir
-
-if(data.week<1)data.week=4
-if(data.week>4)data.week=1
-
-data.workout=0
-
-render()
-
-save()
-
-}
-
-
-function selectWorkout(i){
-
-data.workout=i
-
-render()
-
-save()
-
-}
-
-
-
-function buildProgram(){
-
-let bench=data.bench
-let squat=data.squat
-let dead=data.dead
-let land=data.landmine
-let kb=data.kettlebell
-
-let pct=(v,p)=>round5(v*p)
-
-return{
-
-1:[
-
-{
-name:"DOOM SPEAKS",
-subtitle:"Failure requires permission. Today you are not granting it.",
-
-warmup:[
-"3 min incline walk",
-"Band shoulder activation x15",
-"Hip hinge x10",
-"Bench ramp sets",
-"Deadlift ramp sets"
-],
-
-focus:[
-"Press with authority",
-"Deadlift with tension",
-"Landmine smooth",
-"Kettlebell explosive"
-],
-
-lifts:[
-
-{name:"Bench Press",charge:"5x5",weight:pct(bench,.72),notes:"Own the groove"},
-{name:"Snatch Grip Deadlift",charge:"4x5",weight:pct(dead,.68),notes:"Upper back strong"},
-{name:"Landmine Press",charge:"4x8",weight:land+20,notes:"Drive up"},
-{name:"Kettlebell Swing",charge:"4x15",weight:kb,notes:"Snap hips"}
-
-]
-
-},
-
-{
-name:"COLOSSUS MODE",
-subtitle:"Heavy. Durable. Irritatingly unstoppable.",
-
-warmup:[
-"Bike 3 min",
-"Goblet squat pry",
-"Adductor rockback",
-"Squat ramp",
-"Bench ramp"
-],
-
-focus:[
-"Squat stable",
-"Bench controlled",
-"Row strict",
-"Carry tall"
-],
-
-lifts:[
-
-{name:"Back Squat",charge:"5x5",weight:pct(squat,.72),notes:"Depth clean"},
-{name:"Bench Press",charge:"4x6",weight:pct(bench,.75),notes:"Bar path consistent"},
-{name:"Landmine Row",charge:"4x10",weight:land+30,notes:"Elbow drive"},
-{name:"Kettlebell Carry",charge:"4x40sec",weight:kb,notes:"Stay braced"}
-
-]
-
-},
-
-{
-name:"HULK PROBLEM",
-subtitle:"Subtlety has been cancelled.",
-
-warmup:[
-"Movement prep",
-"Glute bridge",
-"Tspine opener",
-"Deadlift ramp",
-"Squat ramp"
-],
-
-focus:[
-"Pull violently",
-"Squat disciplined",
-"Landmine smooth",
-"Kettlebell conditioning"
-],
-
-lifts:[
-
-{name:"Snatch Grip Deadlift",charge:"5x5",weight:pct(dead,.72),notes:"Explosive"},
-{name:"Back Squat",charge:"4x6",weight:pct(squat,.70),notes:"Control depth"},
-{name:"Landmine Press",charge:"4x10",weight:land+15,notes:"Strong lockout"},
-{name:"Kettlebell Goblet Squat",charge:"4x12",weight:kb,notes:"Stay upright"}
-
-]
-
-}
-
-]
-
-}
-
-}
-
-
-
-function render(){
-
-let program=buildProgram()
-
-let week=program[data.week]
-
-document.getElementById("weekTitle").innerText="Week "+data.week
-
-let buttons=document.getElementById("workoutButtons")
-
-buttons.innerHTML=""
-
-week.forEach((w,i)=>{
-
-let b=document.createElement("button")
-
-b.className="workoutButton"
-
-if(i==data.workout)b.classList.add("activeWorkout")
-
-b.innerText=w.name
-
-b.onclick=()=>selectWorkout(i)
-
-buttons.appendChild(b)
-
-})
-
-let workout=week[data.workout]
-
-document.getElementById("workoutTitle").innerText=workout.name
-document.getElementById("workoutSubtitle").innerText=workout.subtitle
-
-
-let warm=document.getElementById("warmupList")
-
-warm.innerHTML=""
-
-workout.warmup.forEach(x=>{
-let li=document.createElement("li")
-li.innerText=x
-warm.appendChild(li)
-})
-
-
-let focus=document.getElementById("focusList")
-
-focus.innerHTML=""
-
-workout.focus.forEach(x=>{
-let li=document.createElement("li")
-li.innerText=x
-focus.appendChild(li)
-})
-
-
-let table=document.getElementById("liftTable")
-
-table.innerHTML=""
-
-workout.lifts.forEach((lift,i)=>{
-
-let key="w"+data.week+"d"+data.workout+"l"+i
-
-let actual=data.actual[key]||""
-
-let row=document.createElement("tr")
-
-row.innerHTML=`
-
-<td>${lift.name}</td>
-<td>${lift.charge}</td>
-<td>${lift.weight}</td>
-<td><input value="${actual}" onchange="saveActual('${key}',this.value)"></td>
-<td>${lift.notes}</td>
-
-`
-
-table.appendChild(row)
-
-})
-
-}
-
-
-function saveActual(key,val){
-
-data.actual[key]=val
-
-if(val.toLowerCase().includes("easy")){
-
-data.bench+=5
-data.squat+=5
-data.dead+=5
-
-}
-
-if(val.toLowerCase().includes("miss")){
-
-data.bench-=5
-data.squat-=5
-data.dead-=5
-
-}
-
-save()
-
-}
-
-
-
-render()
-
-</script>
-
+  <div id="app" class="app-shell">
+    <section id="loading-screen" class="screen active">
+      <div class="loading-wrap">
+        <div class="loading-core">
+          <div class="ring ring-1"></div>
+          <div class="ring ring-2"></div>
+          <div class="ring ring-3"></div>
+          <div class="core"></div>
+        </div>
+
+        <div class="loading-copy">
+          <p class="eyebrow">VILLAIN ARC ENGINE</p>
+          <h1>Summoning the Month Arc</h1>
+          <p class="muted">Sharpening directives. Tempering strength. Preparing your next campaign.</p>
+        </div>
+
+        <div class="progress-block">
+          <div class="progress-bar">
+            <div id="loading-bar-fill" class="progress-fill"></div>
+          </div>
+          <p id="loading-status" class="progress-text">Awakening command terminal...</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="profile-screen" class="screen">
+      <div class="panel profile-panel">
+        <div class="panel-header">
+          <p class="eyebrow">OPERATOR SETUP</p>
+          <h2>Set Your Base Numbers</h2>
+          <p class="muted">These loads drive the entire month arc. You can re-max at the end of Week 4.</p>
+        </div>
+
+        <form id="profile-form" class="form-grid">
+          <label class="field">
+            <span>Operator Name</span>
+            <input id="name" type="text" placeholder="John" />
+          </label>
+
+          <label class="field">
+            <span>Arc Label</span>
+            <input id="cycleName" type="text" placeholder="Month 01 // Villain Campaign" />
+          </label>
+
+          <label class="field">
+            <span>Bench Max</span>
+            <input id="benchMax" type="number" min="0" step="1" placeholder="225" />
+          </label>
+
+          <label class="field">
+            <span>Squat Max</span>
+            <input id="squatMax" type="number" min="0" step="1" placeholder="315" />
+          </label>
+
+          <label class="field">
+            <span>Deadlift Max</span>
+            <input id="deadliftMax" type="number" min="0" step="1" placeholder="285" />
+          </label>
+
+          <label class="field">
+            <span>Landmine Base</span>
+            <input id="landmineBase" type="number" min="0" step="5" placeholder="45" />
+          </label>
+
+          <label class="field">
+            <span>Kettlebell Base</span>
+            <input id="kettlebellBase" type="number" min="0" step="5" placeholder="35" />
+          </label>
+
+          <div class="actions field-full">
+            <button class="btn btn-primary" type="submit">Enter Campaign</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="hud-screen" class="screen">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">VILLAIN COMMAND</p>
+          <h1 id="hud-title">Welcome back, Operator</h1>
+        </div>
+
+        <div class="topbar-actions">
+          <button id="edit-profile-btn" class="btn btn-secondary" type="button">Edit Numbers</button>
+          <button id="reset-all-btn" class="btn btn-danger" type="button">Reset Engine</button>
+        </div>
+      </header>
+
+      <main class="hud-grid">
+        <section class="panel hero-panel">
+          <div class="arc-banner">
+            <div class="arc-line">
+              <span class="badge" id="arc-name-badge">Doom Directive</span>
+              <span class="badge">Month <span id="month-badge">1</span></span>
+              <span class="badge">Week <span id="week-badge">1</span></span>
+              <span class="badge phase-name" id="phase-badge">Foundation</span>
+            </div>
+
+            <div>
+              <p class="eyebrow">MONTH ARC</p>
+              <h2 id="arc-title" style="margin:0;">Doom Directive</h2>
+              <p id="arc-subtitle" class="muted" style="margin:8px 0 0;">
+                Villain-themed monthly strength campaign.
+              </p>
+            </div>
+
+            <div class="week-controls">
+              <button id="prev-week-btn" class="btn btn-ghost" type="button">Previous Week</button>
+              <button id="next-week-btn" class="btn btn-primary" type="button">Advance Week</button>
+            </div>
+
+            <div>
+              <p class="eyebrow" style="margin-bottom:10px;">DIRECTIVES</p>
+              <div id="directive-tabs" class="directive-tabs"></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="main-layout">
+          <section class="panel sheet-panel">
+            <div class="sheet-card">
+              <div class="sheet-header">
+                <p class="eyebrow">ACTIVE DIRECTIVE</p>
+                <h2 id="directive-title">Doom Speaks</h2>
+                <p id="directive-subtitle" class="muted">Failure requires permission. Today you are not granting it.</p>
+              </div>
+
+              <div class="table-wrap">
+                <table class="paper-table">
+                  <thead>
+                    <tr>
+                      <th>Directive</th>
+                      <th>Charge</th>
+                      <th>Target Load</th>
+                      <th>Actual</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="paper-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="stack">
+            <section class="panel status-panel">
+              <div class="panel-header">
+                <p class="eyebrow">CURRENT OUTPUT</p>
+                <h2>Live Numbers</h2>
+              </div>
+
+              <div class="stat-grid">
+                <div class="stat-card">
+                  <span class="stat-label">Month</span>
+                  <strong id="stat-month">1</strong>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Week</span>
+                  <strong id="stat-week">1</strong>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Bench</span>
+                  <strong id="stat-bench">225</strong>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Squat</span>
+                  <strong id="stat-squat">315</strong>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Deadlift</span>
+                  <strong id="stat-deadlift">285</strong>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Arc</span>
+                  <strong id="stat-arc">Doom Directive</strong>
+                </div>
+              </div>
+
+              <div class="status-block">
+                <div class="panel-header" style="margin-bottom:12px;">
+                  <p class="eyebrow">RE-MAX GATE</p>
+                  <h2>End of Week 4</h2>
+                </div>
+
+                <div class="remax-row">
+                  <label class="field">
+                    <span>Bench AMRAP @ 85%</span>
+                    <input id="bench-remax-reps" type="number" min="0" step="1" placeholder="6" />
+                  </label>
+
+                  <label class="field">
+                    <span>Squat AMRAP @ 85%</span>
+                    <input id="squat-remax-reps" type="number" min="0" step="1" placeholder="5" />
+                  </label>
+
+                  <label class="field">
+                    <span>Deadlift AMRAP @ 85%</span>
+                    <input id="deadlift-remax-reps" type="number" min="0" step="1" placeholder="6" />
+                  </label>
+                </div>
+
+                <button id="run-remax-btn" class="btn btn-primary" type="button" style="margin-top:12px;">
+                  Re-Max and Start Next Month
+                </button>
+
+                <p class="mini-note">
+                  Uses estimated 1RM from 85% AMRAP: weight × (1 + reps × 0.0333). Runs best after Week 4.
+                </p>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="card">
+                <h3>Session Warmup</h3>
+                <ul id="warmup-list" class="clean-list"></ul>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="card">
+                <h3>Session Intent</h3>
+                <ul id="focus-list" class="clean-list"></ul>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="card notes-box">
+                <h3>Session Notes</h3>
+                <textarea id="daily-notes" placeholder="Bar speed, stiffness, pain flags, what moved well, what needs to change next session..."></textarea>
+                <button id="save-notes-btn" class="btn btn-primary" type="button">Save Notes</button>
+              </div>
+            </section>
+          </section>
+        </div>
+
+        <section class="panel archive-panel">
+          <button id="archive-toggle" class="archive-toggle" type="button" aria-expanded="false">
+            <span>Campaign Archive</span>
+            <span id="archive-toggle-icon">+</span>
+          </button>
+
+          <div id="archive-content" class="archive-content collapsed">
+            <div class="archive-inner">
+              <div class="archive-block" style="padding:16px;">
+                <h3>Recent Actual Entries</h3>
+                <div id="recent-lifts" class="stack-list"></div>
+              </div>
+
+              <div class="archive-block" style="padding:16px;">
+                <h3>Saved Session Notes</h3>
+                <p id="archive-daily-notes" class="muted">No notes saved yet.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <p class="footline">
+          Villain theme active. Mobile-safe. End Week 4, re-max, then the engine rolls into a new month arc automatically.
+        </p>
+      </main>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "villain_arc_engine_v1";
+
+      const arcPool = [
+        "Doom Directive",
+        "Juggernaut Campaign",
+        "Gamma Ascension",
+        "Colossus Imperative",
+        "High Evolutionary Design",
+        "Omega Annihilation",
+        "Stark Systems Breach",
+        "Celestial Engine",
+        "Titan Conditioning Matrix",
+        "Vibranium Ascension"
+      ];
+
+      const phaseMap = {
+        1: "Foundation",
+        2: "Escalation",
+        3: "Domination",
+        4: "Regeneration"
+      };
+
+      const defaultData = {
+        month: 1,
+        week: 1,
+        workoutIndex: 0,
+        arcName: "Doom Directive",
+        profile: {
+          name: "",
+          cycleName: "Month 01 // Villain Campaign",
+          benchMax: 225,
+          squatMax: 315,
+          deadliftMax: 285,
+          landmineBase: 45,
+          kettlebellBase: 35
+        },
+        dailyNotes: "",
+        actualEntries: {},
+        recentEntries: [],
+        archiveOpen: false
+      };
+
+      function clone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+
+      function getData() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return clone(defaultData);
+
+          const parsed = JSON.parse(raw);
+          return {
+            ...clone(defaultData),
+            ...parsed,
+            profile: {
+              ...clone(defaultData.profile),
+              ...(parsed.profile || {})
+            },
+            actualEntries: parsed.actualEntries || {},
+            recentEntries: Array.isArray(parsed.recentEntries) ? parsed.recentEntries : []
+          };
+        } catch {
+          return clone(defaultData);
+        }
+      }
+
+      function saveData(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+
+      function resetData() {
+        localStorage.removeItem(STORAGE_KEY);
+        return clone(defaultData);
+      }
+
+      function round5(value) {
+        return Math.max(5, Math.round(value / 5) * 5);
+      }
+
+      function pct(value, decimal) {
+        return round5(value * decimal);
+      }
+
+      function estimate1RM(weight, reps) {
+        return Math.round(weight * (1 + reps * 0.0333));
+      }
+
+      function pickArcName(month) {
+        return arcPool[(month - 1) % arcPool.length];
+      }
+
+      function showScreen(screenName) {
+        Object.values(screens).forEach((screen) => {
+          if (screen) screen.classList.remove("active");
+        });
+        if (screens[screenName]) screens[screenName].classList.add("active");
+      }
+
+      function hasProfile() {
+        return Boolean(appData.profile?.name?.trim());
+      }
+
+      function weekPrescription(week) {
+        if (week === 1) {
+          return {
+            primaryA: "5 x 5",
+            primaryB: "4 x 5",
+            accessory: "4 x 10",
+            kb: "4 x 12-15",
+            core: "3 x 10-12 / 30-40 sec"
+          };
+        }
+
+        if (week === 2) {
+          return {
+            primaryA: "5-4-3-4-5",
+            primaryB: "5-4-3-4-5",
+            accessory: "4 x 8",
+            kb: "4 x 10-12",
+            core: "3 x 8-10 / 30-40 sec"
+          };
+        }
+
+        if (week === 3) {
+          return {
+            primaryA: "4 x 8",
+            primaryB: "4 x 8-10",
+            accessory: "4 x 8-10",
+            kb: "4 x 8-10",
+            core: "3 x 8-10 / 35-45 sec"
+          };
+        }
+
+        return {
+          primaryA: "3 x 12",
+          primaryB: "3 x 12",
+          accessory: "3 x 12-15",
+          kb: "3 x 12-15",
+          core: "3 x 10-12 / 30 sec"
+        };
+      }
+
+      function weekLoad(type, max, week) {
+        if (type === "week2wave") {
+          return `${pct(max, 0.70)} / ${pct(max, 0.75)} / ${pct(max, 0.80)} / ${pct(max, 0.75)} / ${pct(max, 0.70)}`;
+        }
+
+        if (type === "week1heavy") return pct(max, 0.72);
+        if (type === "week1secondary") return pct(max, 0.68);
+
+        if (type === "week3heavy") return pct(max, 0.68);
+        if (type === "week3secondary") return pct(max, 0.65);
+
+        if (type === "week4heavy") return pct(max, 0.55);
+        if (type === "week4secondary") return pct(max, 0.50);
+
+        return pct(max, 0.7);
+      }
+
+      function buildWeekPlan(profile, week) {
+        const bench = Number(profile.benchMax) || 225;
+        const squat = Number(profile.squatMax) || 315;
+        const deadlift = Number(profile.deadliftMax) || 285;
+        const landmine = Number(profile.landmineBase) || 45;
+        const kb = Number(profile.kettlebellBase) || 35;
+        const s = weekPrescription(week);
+
+        const week1 = [
+          {
+            name: "Doom Speaks",
+            subtitle: "Failure requires permission. Today you are not granting it.",
+            warmup: [
+              "3 min incline walk or bike",
+              "Band shoulder activation x 15",
+              "Hip hinge x 10",
+              "Bench ramp x 3 waves",
+              "Deadlift ramp x 3 waves"
+            ],
+            focus: [
+              "Press with control, not panic.",
+              "Pull with upper-back tension.",
+              "Meadows row should be strict and ugly in the right way.",
+              "Core stays anti-rotation, not ab circus."
+            ],
+            lifts: [
+              { name: "Bench Press", charge: s.primaryA, weight: week === 2 ? weekLoad("week2wave", bench, week) : week === 3 ? weekLoad("week3heavy", bench, week) : week === 4 ? weekLoad("week4heavy", bench, week) : weekLoad("week1heavy", bench, week), notes: "Main press. Own the groove." },
+              { name: "Snatch-Grip Deadlift", charge: s.primaryB, weight: week === 2 ? weekLoad("week2wave", dead, week) : week === 3 ? weekLoad("week3secondary", dead, week) : week === 4 ? weekLoad("week4secondary", dead, week) : weekLoad("week1secondary", dead, week), notes: "Huge upper back. No soft setup." },
+              { name: "Landmine Meadows Row", charge: s.accessory, weight: round5(landmine + (week === 1 ? 30 : week === 2 ? 35 : week === 3 ? 40 : 15)), notes: "Drive through elbow. No torso slop." },
+              { name: "Bulgarian Split Squat", charge: week === 4 ? "3 x 10 each" : "3-4 x 8-10 each", weight: "Bodyweight / DB", notes: "Own balance and depth." },
+              { name: "Kettlebell Swing", charge: s.kb, weight: round5(kb + (week >= 3 ? 10 : week === 2 ? 5 : 0)), notes: "Snap hips. Stay crisp." },
+              { name: "Pallof Press", charge: s.core, weight: "Band / Cable", notes: "Anti-rotation. Ribs down." }
+            ]
+          },
+          {
+            name: "Colossus Mode",
+            subtitle: "Heavy, durable, and disrespectfully hard to move.",
+            warmup: [
+              "3 min bike",
+              "Adductor rockback x 8 each side",
+              "Goblet squat pry x 8",
+              "Squat ramp x 3 waves",
+              "Bench ramp x 2 waves"
+            ],
+            focus: [
+              "Stack the squat.",
+              "Bench with leg drive and discipline.",
+              "Landmine lunge should feel athletic, not floppy.",
+              "Carries are anti-lateral-flexion work disguised as suffering."
+            ],
+            lifts: [
+              { name: "Back Squat", charge: s.primaryA, weight: week === 2 ? weekLoad("week2wave", squat, week) : week === 3 ? weekLoad("week3heavy", squat, week) : week === 4 ? weekLoad("week4heavy", squat, week) : weekLoad("week1heavy", squat, week), notes: "Depth and brace." },
+              { name: "Bench Press", charge: week === 1 ? "4 x 6" : week === 2 ? s.primaryB : week === 3 ? s.primaryB : s.primaryB, weight: week === 2 ? weekLoad("week2wave", bench, week) : week === 3 ? weekLoad("week3secondary", bench, week) : week === 4 ? weekLoad("week4secondary", bench, week) : pct(bench, 0.75), notes: "Repeatable press quality." },
+              { name: "Landmine Lunges", charge: week === 4 ? "3 x 10 each" : "4 x 8 each", weight: round5(landmine + (week === 1 ? 20 : week === 2 ? 25 : week === 3 ? 30 : 10)), notes: "Athletic unilateral strength." },
+              { name: "Romanian Deadlift", charge: week === 4 ? "3 x 10" : "3 x 8-10", weight: week === 1 ? pct(dead, 0.50) : week === 2 ? pct(dead, 0.55) : week === 3 ? pct(dead, 0.60) : pct(dead, 0.45), notes: "Lengthen hamstrings. Stay braced." },
+              { name: "Kettlebell Front Rack Carry", charge: s.core, weight: round5(kb + (week >= 3 ? 10 : 5)), notes: "Anti-lateral flexion. Tall and locked in." },
+              { name: "Dead Bug", charge: "3 x 8-10 each", weight: "Bodyweight", notes: "Anti-extension. Move slow." }
+            ]
+          },
+          {
+            name: "Hulk Problem",
+            subtitle: "Subtlety has been cancelled.",
+            warmup: [
+              "3 min row or fast walk",
+              "Glute bridge x 12",
+              "T-spine opener x 8",
+              "Deadlift ramp x 3 waves",
+              "Squat ramp x 2 waves"
+            ],
+            focus: [
+              "Deadlift violently, recover clean.",
+              "Squat under control.",
+              "Kneeling landmine thruster should feel brutal but organized.",
+              "Core stays about bracing, not crunching."
+            ],
+            lifts: [
+              { name: "Deadlift", charge: s.primaryA, weight: week === 2 ? weekLoad("week2wave", dead, week) : week === 3 ? weekLoad("week3heavy", dead, week) : week === 4 ? weekLoad("week4heavy", dead, week) : weekLoad("week1heavy", dead, week), notes: "Conventional pull. Clean violence." },
+              { name: "Back Squat", charge: week === 1 ? "4 x 6" : week === 2 ? s.primaryB : week === 3 ? s.primaryB : s.primaryB, weight: week === 2 ? weekLoad("week2wave", squat, week) : week === 3 ? weekLoad("week3secondary", squat, week) : week === 4 ? weekLoad("week4secondary", squat, week) : pct(squat, 0.70), notes: "Stay stacked. No divebombing." },
+              { name: "Half-Kneeling Landmine Thruster", charge: week === 4 ? "3 x 10 each" : "4 x 8 each", weight: round5(landmine + (week === 1 ? 15 : week === 2 ? 20 : week === 3 ? 25 : 10)), notes: "Press and brace together." },
+              { name: "Bulgarian Split Squat", charge: week === 4 ? "3 x 10 each" : "3-4 x 8 each", weight: "Bodyweight / DB", notes: "Control depth and pelvis." },
+              { name: "Kettlebell Goblet Squat", charge: s.kb, weight: round5(kb + (week >= 3 ? 10 : 0)), notes: "Stay upright and brutal." },
+              { name: "Suitcase Carry", charge: "3 x 35-45 sec each", weight: round5(kb + 5), notes: "Anti-lateral flexion. No leaning." }
+            ]
+          }
+        ];
+
+        return week1;
+      }
+
+      function getDirectiveKey(week, workoutIndex, liftIndex) {
+        return `w${week}-d${workoutIndex}-l${liftIndex}-m${appData.month}`;
+      }
+
+      function applyAutoProgressionFromEntry(liftName, value) {
+        if (!value) return;
+        const text = value.toLowerCase();
+        const strong = ["easy", "smooth", "owned", "all sets", "all reps", "strong"].some(word => text.includes(word));
+        const poor = ["miss", "failed", "ugly", "pain", "grind", "cut"].some(word => text.includes(word));
+
+        const lift = liftName.toLowerCase();
+
+        if (strong) {
+          if (lift.includes("bench")) appData.profile.benchMax += 5;
+          if (lift.includes("squat")) appData.profile.squatMax += 5;
+          if (lift.includes("deadlift") && !lift.includes("romanian")) appData.profile.deadliftMax += 5;
+        }
+
+        if (poor) {
+          if (lift.includes("bench")) appData.profile.benchMax = Math.max(45, appData.profile.benchMax - 5);
+          if (lift.includes("squat")) appData.profile.squatMax = Math.max(45, appData.profile.squatMax - 5);
+          if (lift.includes("deadlift") && !lift.includes("romanian")) appData.profile.deadliftMax = Math.max(45, appData.profile.deadliftMax - 5);
+        }
+      }
+
+      const screens = {
+        loading: document.getElementById("loading-screen"),
+        profile: document.getElementById("profile-screen"),
+        hud: document.getElementById("hud-screen")
+      };
+
+      const els = {
+        loadingBarFill: document.getElementById("loading-bar-fill"),
+        loadingStatus: document.getElementById("loading-status"),
+
+        profileForm: document.getElementById("profile-form"),
+        name: document.getElementById("name"),
+        cycleName: document.getElementById("cycleName"),
+        benchMax: document.getElementById("benchMax"),
+        squatMax: document.getElementById("squatMax"),
+        deadliftMax: document.getElementById("deadliftMax"),
+        landmineBase: document.getElementById("landmineBase"),
+        kettlebellBase: document.getElementById("kettlebellBase"),
+
+        hudTitle: document.getElementById("hud-title"),
+
+        arcNameBadge: document.getElementById("arc-name-badge"),
+        monthBadge: document.getElementById("month-badge"),
+        weekBadge: document.getElementById("week-badge"),
+        phaseBadge: document.getElementById("phase-badge"),
+        arcTitle: document.getElementById("arc-title"),
+        arcSubtitle: document.getElementById("arc-subtitle"),
+
+        directiveTabs: document.getElementById("directive-tabs"),
+        directiveTitle: document.getElementById("directive-title"),
+        directiveSubtitle: document.getElementById("directive-subtitle"),
+        paperTableBody: document.getElementById("paper-table-body"),
+
+        warmupList: document.getElementById("warmup-list"),
+        focusList: document.getElementById("focus-list"),
+        dailyNotes: document.getElementById("daily-notes"),
+        saveNotesBtn: document.getElementById("save-notes-btn"),
+
+        statMonth: document.getElementById("stat-month"),
+        statWeek: document.getElementById("stat-week"),
+        statBench: document.getElementById("stat-bench"),
+        statSquat: document.getElementById("stat-squat"),
+        statDeadlift: document.getElementById("stat-deadlift"),
+        statArc: document.getElementById("stat-arc"),
+
+        prevWeekBtn: document.getElementById("prev-week-btn"),
+        nextWeekBtn: document.getElementById("next-week-btn"),
+
+        benchRemaxReps: document.getElementById("bench-remax-reps"),
+        squatRemaxReps: document.getElementById("squat-remax-reps"),
+        deadliftRemaxReps: document.getElementById("deadlift-remax-reps"),
+        runRemaxBtn: document.getElementById("run-remax-btn"),
+
+        recentLifts: document.getElementById("recent-lifts"),
+        archiveDailyNotes: document.getElementById("archive-daily-notes"),
+        archiveToggle: document.getElementById("archive-toggle"),
+        archiveContent: document.getElementById("archive-content"),
+        archiveToggleIcon: document.getElementById("archive-toggle-icon"),
+
+        editProfileBtn: document.getElementById("edit-profile-btn"),
+        resetAllBtn: document.getElementById("reset-all-btn")
+      };
+
+      let appData = getData();
+      if (!appData.arcName) appData.arcName = pickArcName(appData.month);
+
+      function fillProfileForm() {
+        const p = appData.profile;
+        els.name.value = p.name || "";
+        els.cycleName.value = p.cycleName || "";
+        els.benchMax.value = p.benchMax || "";
+        els.squatMax.value = p.squatMax || "";
+        els.deadliftMax.value = p.deadliftMax || "";
+        els.landmineBase.value = p.landmineBase || "";
+        els.kettlebellBase.value = p.kettlebellBase || "";
+      }
+
+      function saveProfileFromForm() {
+        appData.profile = {
+          name: els.name.value.trim(),
+          cycleName: els.cycleName.value.trim() || `Month ${String(appData.month).padStart(2, "0")} // Villain Campaign`,
+          benchMax: Number(els.benchMax.value) || 225,
+          squatMax: Number(els.squatMax.value) || 315,
+          deadliftMax: Number(els.deadliftMax.value) || 285,
+          landmineBase: Number(els.landmineBase.value) || 45,
+          kettlebellBase: Number(els.kettlebellBase.value) || 35
+        };
+        saveData(appData);
+      }
+
+      function setArchiveState(open) {
+        appData.archiveOpen = Boolean(open);
+        els.archiveContent.classList.toggle("collapsed", !open);
+        els.archiveToggle.setAttribute("aria-expanded", String(open));
+        els.archiveToggleIcon.textContent = open ? "−" : "+";
+        saveData(appData);
+      }
+
+      function renderHeader() {
+        const phase = phaseMap[appData.week];
+        const arc = appData.arcName || pickArcName(appData.month);
+        const name = appData.profile.name?.trim() || "Operator";
+
+        els.hudTitle.textContent = `Welcome back, ${name}`;
+        els.arcNameBadge.textContent = arc;
+        els.monthBadge.textContent = appData.month;
+        els.weekBadge.textContent = appData.week;
+        els.phaseBadge.textContent = phase;
+        els.arcTitle.textContent = arc;
+        els.arcSubtitle.textContent = `${phase} phase. Three directives this week. End Week 4, re-max and the engine opens the next month arc.`;
+
+        els.statMonth.textContent = appData.month;
+        els.statWeek.textContent = appData.week;
+        els.statBench.textContent = appData.profile.benchMax || 0;
+        els.statSquat.textContent = appData.profile.squatMax || 0;
+        els.statDeadlift.textContent = appData.profile.deadliftMax || 0;
+        els.statArc.textContent = arc;
+      }
+
+      function renderDirectiveTabs(plan) {
+        els.directiveTabs.innerHTML = "";
+        plan.forEach((directive, index) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = `btn btn-ghost btn-tab ${index === appData.workoutIndex ? "active" : ""}`;
+          btn.textContent = directive.name;
+          btn.addEventListener("click", () => {
+            appData.workoutIndex = index;
+            saveData(appData);
+            renderHud();
+          });
+          els.directiveTabs.appendChild(btn);
+        });
+      }
+
+      function renderDirective(plan) {
+        const directive = plan[appData.workoutIndex] || plan[0];
+        els.directiveTitle.textContent = directive.name;
+        els.directiveSubtitle.textContent = directive.subtitle;
+
+        els.warmupList.innerHTML = "";
+        directive.warmup.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          els.warmupList.appendChild(li);
+        });
+
+        els.focusList.innerHTML = "";
+        directive.focus.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          els.focusList.appendChild(li);
+        });
+
+        els.paperTableBody.innerHTML = "";
+        directive.lifts.forEach((lift, liftIndex) => {
+          const key = getDirectiveKey(appData.week, appData.workoutIndex, liftIndex);
+          const currentActual = appData.actualEntries[key] || "";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>
+              <div class="lift-name">${lift.name}</div>
+            </td>
+            <td>${lift.charge}</td>
+            <td>${lift.weight}</td>
+            <td>
+              <input
+                class="actual-input"
+                type="text"
+                value="${escapeHtml(currentActual)}"
+                placeholder="ex: hit all sets easy / missed last set / 225 x5 x5 x5 x5"
+              />
+            </td>
+            <td class="lift-sub">${lift.notes}</td>
+          `;
+
+          const input = tr.querySelector(".actual-input");
+          input.addEventListener("change", (e) => {
+            const value = e.target.value.trim();
+            appData.actualEntries[key] = value;
+            applyAutoProgressionFromEntry(lift.name, value);
+
+            if (value) {
+              appData.recentEntries.unshift({
+                label: `Month ${appData.month} • Week ${appData.week} • ${directive.name}`,
+                text: `${lift.name}: ${value}`
+              });
+              appData.recentEntries = appData.recentEntries.slice(0, 20);
+            }
+
+            saveData(appData);
+            renderHeader();
+            renderArchive();
+          });
+
+          els.paperTableBody.appendChild(tr);
+        });
+      }
+
+      function renderArchive() {
+        els.archiveDailyNotes.textContent = appData.dailyNotes?.trim() || "No notes saved yet.";
+        els.recentLifts.innerHTML = "";
+
+        if (!appData.recentEntries.length) {
+          const p = document.createElement("p");
+          p.className = "muted";
+          p.textContent = "No actual entries saved yet.";
+          els.recentLifts.appendChild(p);
+        } else {
+          appData.recentEntries.forEach((entry) => {
+            const div = document.createElement("div");
+            div.className = "log-item";
+            div.innerHTML = `
+              <div class="top">${escapeHtml(entry.label)}</div>
+              <div class="bottom">${escapeHtml(entry.text)}</div>
+            `;
+            els.recentLifts.appendChild(div);
+          });
+        }
+
+        setArchiveState(appData.archiveOpen);
+      }
+
+      function renderHud() {
+        const plan = buildWeekPlan(appData.profile, appData.week);
+        if (appData.workoutIndex > 2) appData.workoutIndex = 0;
+
+        renderHeader();
+        renderDirectiveTabs(plan);
+        renderDirective(plan);
+        els.dailyNotes.value = appData.dailyNotes || "";
+        renderArchive();
+      }
+
+      function changeWeek(direction) {
+        appData.week += direction;
+        if (appData.week < 1) appData.week = 4;
+        if (appData.week > 4) appData.week = 1;
+        appData.workoutIndex = 0;
+        saveData(appData);
+        renderHud();
+      }
+
+      function runRemaxAndAdvanceMonth() {
+        const bench85 = round5(appData.profile.benchMax * 0.85);
+        const squat85 = round5(appData.profile.squatMax * 0.85);
+        const dead85 = round5(appData.profile.deadliftMax * 0.85);
+
+        const benchReps = Number(els.benchRemaxReps.value) || 0;
+        const squatReps = Number(els.squatRemaxReps.value) || 0;
+        const deadReps = Number(els.deadliftRemaxReps.value) || 0;
+
+        if (!benchReps && !squatReps && !deadReps) {
+          alert("Enter at least one AMRAP rep result before re-maxing.");
+          return;
+        }
+
+        if (benchReps > 0) appData.profile.benchMax = estimate1RM(bench85, benchReps);
+        if (squatReps > 0) appData.profile.squatMax = estimate1RM(squat85, squatReps);
+        if (deadReps > 0) appData.profile.deadliftMax = estimate1RM(dead85, deadReps);
+
+        appData.month += 1;
+        appData.week = 1;
+        appData.workoutIndex = 0;
+        appData.arcName = pickArcName(appData.month);
+        appData.profile.cycleName = `Month ${String(appData.month).padStart(2, "0")} // ${appData.arcName}`;
+        appData.actualEntries = {};
+        appData.dailyNotes = "";
+
+        els.benchRemaxReps.value = "";
+        els.squatRemaxReps.value = "";
+        els.deadliftRemaxReps.value = "";
+
+        saveData(appData);
+        renderHud();
+      }
+
+      function bootLoadingSequence() {
+        showScreen("loading");
+
+        const steps = [
+          { pct: 18, text: "Awakening command terminal..." },
+          { pct: 38, text: "Binding current month arc..." },
+          { pct: 62, text: "Sharpening weekly directives..." },
+          { pct: 84, text: "Calibrating mobile combat sheet..." },
+          { pct: 100, text: "Campaign live." }
+        ];
+
+        let index = 0;
+
+        function step() {
+          const current = steps[index];
+          els.loadingBarFill.style.width = `${current.pct}%`;
+          els.loadingStatus.textContent = current.text;
+          index += 1;
+
+          if (index < steps.length) {
+            setTimeout(step, 320);
+          } else {
+            setTimeout(() => {
+              if (hasProfile()) {
+                renderHud();
+                showScreen("hud");
+              } else {
+                fillProfileForm();
+                showScreen("profile");
+              }
+            }, 360);
+          }
+        }
+
+        setTimeout(step, 240);
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      els.profileForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!els.name.value.trim()) {
+          alert("Put your name in so the engine knows who it is yelling at.");
+          return;
+        }
+        saveProfileFromForm();
+        renderHud();
+        showScreen("hud");
+      });
+
+      els.prevWeekBtn.addEventListener("click", () => changeWeek(-1));
+      els.nextWeekBtn.addEventListener("click", () => changeWeek(1));
+
+      els.saveNotesBtn.addEventListener("click", () => {
+        appData.dailyNotes = els.dailyNotes.value.trim();
+        saveData(appData);
+        renderArchive();
+      });
+
+      els.runRemaxBtn.addEventListener("click", runRemaxAndAdvanceMonth);
+
+      els.archiveToggle.addEventListener("click", () => {
+        setArchiveState(!appData.archiveOpen);
+      });
+
+      els.editProfileBtn.addEventListener("click", () => {
+        fillProfileForm();
+        showScreen("profile");
+      });
+
+      els.resetAllBtn.addEventListener("click", () => {
+        const ok = window.confirm("Reset the entire engine? This clears month, week, notes, entries, and numbers.");
+        if (!ok) return;
+        appData = resetData();
+        appData.arcName = pickArcName(appData.month);
+        fillProfileForm();
+        showScreen("profile");
+      });
+
+      bootLoadingSequence();
+    })();
+  </script>
 </body>
 </html>

@@ -1,14 +1,19 @@
 :root {
   --bg: #0a0d14;
   --panel: #121826;
+  --panel-2: #0d1421;
   --line: #253149;
   --text: #edf2ff;
   --muted: #9fb0cf;
   --accent: #7dd3fc;
   --accent-2: #fbbf24;
+  --danger: #f87171;
+  --success: #86efac;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -27,6 +32,15 @@ body {
   margin-bottom: 20px;
 }
 
+.hero h1 {
+  margin-bottom: 8px;
+}
+
+.hero p {
+  margin-top: 0;
+  color: var(--muted);
+}
+
 .card {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -35,20 +49,45 @@ body {
   margin-bottom: 16px;
 }
 
+.card h2,
+.card h3,
+.card h4 {
+  margin-top: 0;
+}
+
+.nested-card {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 12px;
+}
+
+.muted-text {
+  color: var(--muted);
+}
+
+.top-gap {
+  margin-top: 12px;
+}
+
 form {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
 
-input, textarea, button {
+input,
+textarea,
+button {
   font: inherit;
   padding: 12px;
   border-radius: 12px;
   border: 1px solid var(--line);
 }
 
-input, textarea {
+input,
+textarea {
   background: #0b1220;
   color: var(--text);
 }
@@ -56,6 +95,7 @@ input, textarea {
 textarea {
   grid-column: 1 / -1;
   min-height: 90px;
+  resize: vertical;
 }
 
 button {
@@ -65,12 +105,53 @@ button {
   cursor: pointer;
 }
 
+.secondary-btn {
+  background: #182234;
+  color: var(--text);
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lift-block {
+  margin-bottom: 16px;
+}
+
+.lift-meta {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 4px 0 0;
+}
+
+.block-title {
+  margin: 8px 0 4px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.set-line {
+  padding: 2px 0;
+}
+
+.today-title {
+  margin-bottom: 10px;
+}
+
+.today-subtitle {
+  color: var(--muted);
+  margin-top: 0;
+}
+
 .loading-screen {
   position: fixed;
   inset: 0;
   display: grid;
   place-items: center;
   background: rgba(4, 8, 14, 0.95);
+  z-index: 999;
 }
 
 .loading-panel {
@@ -78,7 +159,19 @@ button {
 }
 
 @media (max-width: 700px) {
+  .app-shell {
+    padding: 16px 12px 36px;
+  }
+
   form {
     grid-template-columns: 1fr;
+  }
+
+  button {
+    min-height: 48px;
+  }
+
+  .card {
+    padding: 14px;
   }
 }

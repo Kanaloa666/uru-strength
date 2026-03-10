@@ -8,7 +8,7 @@ const logHistory = document.getElementById("log-history");
 const scorecardHistory = document.getElementById("scorecard-history");
 
 function renderProgram() {
-  if (!state.program) {
+  if (!state.program || !state.program.weeks) {
     programOutput.innerHTML = "<p>No cycle generated yet.</p>";
     return;
   }
@@ -38,19 +38,20 @@ function renderDayCard(day) {
     <div class="card">
       <h4>${day.title}</h4>
       ${day.bigLifts.map(renderBigLift).join("")}
-      <div>
+
+      <div style="margin-top:10px;">
         <strong>Forge Movement:</strong><br>
         ${day.forgeMovement.name} — ${day.forgeMovement.prescription}<br>
         <em>${day.forgeMovement.notes || ""}</em>
       </div>
-      <br>
-      <div>
+
+      <div style="margin-top:10px;">
         <strong>${day.thrusterLadder.name}:</strong><br>
         ${day.thrusterLadder.reps.join(" / ")}<br>
         <em>${day.thrusterLadder.notes || ""}</em>
       </div>
-      <br>
-      <div>
+
+      <div style="margin-top:10px;">
         <strong>Optional:</strong><br>
         ${day.optional.name} — ${day.optional.prescription}
       </div>
@@ -65,10 +66,12 @@ function renderBigLift(bigLift) {
       <span>Based on max: ${bigLift.basedOnMax} lb</span><br>
       ${bigLift.tempo ? `<span><em>${bigLift.tempo}</em></span><br>` : ""}
       ${bigLift.pause ? `<span><em>${bigLift.pause}</em></span><br>` : ""}
+
       <div style="margin-top:8px;">
         <strong>Warmups</strong><br>
         ${bigLift.warmups.map(renderWarmup).join("<br>")}
       </div>
+
       <div style="margin-top:8px;">
         <strong>Work Sets</strong><br>
         ${bigLift.sets.map(renderSet).join("<br>")}
@@ -93,19 +96,21 @@ function renderInfinityForge(boss) {
     <div class="card">
       <h4>${boss.title}</h4>
       <p>${boss.subtitle}</p>
+
       ${boss.bigLifts.map(renderBigLift).join("")}
-      <div>
+
+      <div style="margin-top:10px;">
         <strong>Forge Movement:</strong><br>
         ${boss.forgeMovement.name} — ${boss.forgeMovement.prescription}<br>
-        <em>${boss.forgeMovement.notes}</em>
+        <em>${boss.forgeMovement.notes || ""}</em>
       </div>
-      <br>
-      <div>
+
+      <div style="margin-top:10px;">
         <strong>Titan Circuit</strong><br>
         ${boss.titanCircuit.map(item => `${item.name} — ${item.prescription}`).join("<br>")}
       </div>
-      <br>
-      <div>
+
+      <div style="margin-top:10px;">
         <strong>Scorecard Fields</strong><br>
         ${boss.scorecardFields.join("<br>")}
       </div>

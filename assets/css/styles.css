@@ -1,259 +1,80 @@
-:root{
-  --bg:#0a0d14;
-  --panel:#121826;
-  --panel-2:#0d1421;
-  --line:#253149;
-  --text:#edf2ff;
-  --muted:#9fb0cf;
-  --accent:#7dd3fc;
-  --accent-2:#fbbf24;
-  --danger:#f87171;
-}
+/* ============================= */
+/* Forge Directive Set Tracking  */
+/* ============================= */
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family: Inter, Arial, sans-serif;
-  background: linear-gradient(180deg,#06080f,#0d1320);
-  color:var(--text);
-}
-
-.screen.hidden{display:none}
-
-.app-shell{
-  max-width:1100px;
-  margin:0 auto;
-  padding:24px 16px 48px;
-}
-
-.hero{margin-bottom:20px}
-.hero h1{margin-bottom:8px}
-.hero p{margin:0;color:var(--muted)}
-
-.card{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:18px;
-  margin-bottom:16px;
-}
-
-.hud-card{
-  background:
-    radial-gradient(circle at top right, rgba(251,191,36,.12), transparent 30%),
-    linear-gradient(180deg, #121826, #0d1421);
-}
-
-.nested-card{
-  background:var(--panel-2);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:14px;
-  margin-top:12px;
-}
-
-.muted-text{color:var(--muted)}
-.top-gap{margin-top:12px}
-
-form{
+.set-row{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
+  grid-template-columns: 26px 1fr minmax(120px, 180px);
+  gap:10px;
+  align-items:center;
+  padding:6px 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
 }
 
-input, textarea, button{
-  font:inherit;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid var(--line);
+.set-row:last-child{
+  border-bottom:none;
 }
 
-input, textarea{
-  background:#0b1220;
-  color:var(--text);
-}
-
-textarea{
-  grid-column:1/-1;
-  min-height:90px;
-  resize:vertical;
-}
-
-button{
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  color:#081018;
-  font-weight:800;
+.set-check{
+  width:20px;
+  height:20px;
+  accent-color: var(--accent-2);
   cursor:pointer;
 }
 
-.secondary-btn{
-  background:#182234;
+.set-text{
+  font-weight:600;
+  font-size:0.95rem;
+}
+
+.set-note{
+  width:100%;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:#0b1220;
   color:var(--text);
+  padding:8px 10px;
+  min-height:40px;
+  font-size:0.9rem;
+  transition:border 0.2s ease, box-shadow 0.2s ease;
 }
 
-.button-row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
+.set-note:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 2px rgba(125,211,252,0.2);
 }
 
-.archive-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
+.set-note.saved-note{
+  border-color:rgba(251,191,36,0.35);
 }
 
-.archive-collapsed{display:none}
-.archive-expanded{display:block}
+/* Warmup / Work section headers */
 
-.hud-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-}
-
-.hud-item{
-  background:rgba(255,255,255,0.03);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px;
-}
-
-.hud-label{
-  color:var(--muted);
-  font-size:.82rem;
-  text-transform:uppercase;
-  letter-spacing:.05em;
+.mini-title{
+  margin-top:10px;
   margin-bottom:6px;
-}
-
-.hud-value{
-  font-weight:800;
-}
-
-.progress-shell{
-  margin-top:14px;
-  width:100%;
-  height:14px;
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.06);
-  border-radius:999px;
-  overflow:hidden;
-}
-
-.progress-fill{
-  height:100%;
-  width:0%;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  border-radius:999px;
-  transition:width .3s ease;
-}
-
-.boss-warning{
-  margin-top:12px;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid rgba(248,113,113,0.35);
-  background:rgba(248,113,113,0.08);
-  color:#ffd6d6;
-  font-weight:900;
-}
-
-.directive-stack{
-  display:grid;
-  gap:12px;
-  margin-top:12px;
-}
-
-.directive-block{
-  background:var(--panel-2);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px;
-}
-
-.directive-label{
-  color:var(--accent);
-  font-size:.82rem;
+  color:var(--muted);
+  font-size:.8rem;
   text-transform:uppercase;
-  letter-spacing:.05em;
-  margin-bottom:8px;
-  font-weight:800;
+  letter-spacing:.08em;
+  font-weight:700;
 }
 
-.directive-line{padding:3px 0}
-
-.loading-screen{
-  position:fixed;
-  inset:0;
-  display:grid;
-  place-items:center;
-  background:
-    radial-gradient(circle at center, rgba(251,191,36,0.10), transparent 25%),
-    linear-gradient(180deg, #05070c, #0b111d);
-  z-index:999;
-}
-
-.loading-panel{
-  text-align:center;
-  width:min(420px,86vw);
-}
-
-.forge-loader{
-  position:relative;
-  width:110px;
-  height:110px;
-  margin:0 auto 18px;
-}
-
-.forge-ring{
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  border:2px solid rgba(125,211,252,0.18);
-  border-top-color: rgba(251,191,36,0.9);
-  animation: spinForge 1.5s linear infinite;
-}
-
-.forge-core{
-  width:34px;height:34px;border-radius:50%;
-  background: radial-gradient(circle, rgba(251,191,36,1), rgba(245,158,11,0.9));
-  box-shadow:0 0 18px rgba(251,191,36,0.8);
-  position:absolute;top:38px;left:38px;
-  animation:pulseForge 1.2s ease-in-out infinite;
-}
-
-.loading-bar-shell{
-  margin-top:14px;
-  width:100%;
-  height:10px;
-  background:rgba(255,255,255,0.08);
-  border-radius:999px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,0.06);
-}
-
-.loading-bar{
-  width:0%;
-  height:100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  border-radius:999px;
-  transition: width 0.35s ease;
-}
-
-@keyframes spinForge{to{transform:rotate(360deg)}}
-@keyframes pulseForge{0%,100%{transform:scale(.94)}50%{transform:scale(1.08)}}
-
-@media (max-width:800px){
-  .hud-grid{grid-template-columns:repeat(2,1fr)}
-}
+/* ============================= */
+/* Mobile optimization           */
+/* ============================= */
 
 @media (max-width:700px){
-  .app-shell{padding:16px 12px 36px}
-  form{grid-template-columns:1fr}
-  button{min-height:48px}
-  .card{padding:14px}
-  .hud-grid{grid-template-columns:1fr}
+
+  .set-row{
+    grid-template-columns:26px 1fr;
+    gap:8px;
+  }
+
+  .set-note{
+    grid-column:2 / 3;
+    margin-top:4px;
+  }
+
 }

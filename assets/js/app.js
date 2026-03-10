@@ -9,13 +9,79 @@ const scorecardHistory = document.getElementById("scorecard-history");
 const todayWorkout = document.getElementById("today-workout");
 const prevWorkoutBtn = document.getElementById("prev-workout");
 const nextWorkoutBtn = document.getElementById("next-workout");
+const resetWorkoutChecksBtn = document.getElementById("reset-workout-checks");
 
-function renderWarmup(warmup) {
+function getTrackingKey(section, weekIndex, dayIndex, liftIndex, setType, setIndex) {
+  return `${section}|w${weekIndex}|d${dayIndex}|l${liftIndex}|${setType}|s${setIndex}`;
+}
+
+function ensureTracking() {
+  if (!state.setTracking) {
+    state.setTracking = {};
+  }
+}
+
+function getTrackedSet(key) {
+  ensureTracking();
+  return state.setTracking[key] || { checked: false, note: "" };
+}
+
+function updateTrackedSet(key, updates) {
+  ensureTracking();
+  const current = getTrackedSet(key);
+  state.setTracking[key] = {
+    ...current,
+    ...updates
+  };
+  saveAppData(state);
+}
+
+function clearCurrentWorkoutTracking() {
+  ensureTracking();
+
+  const weekIndex = state.currentWorkout?.weekIndex || 0;
+  const dayIndex = state.currentWorkout?.dayIndex || 0;
+  const prefixA = `today|w${weekIndex}|d${dayIndex}|`;
+  const prefixB = `program|w${weekIndex}|d${dayIndex}|`;
+
+  Object.keys(state.setTracking).forEach((key) => {
+    if (key.startsWith(prefixA) || key.startsWith(prefixB)) {
+      delete state.setTracking[key];
+    }
+  });
+
+  saveAppData(state);
+}
+
+function renderTrackedSetLine(label, key) {
+  const tracked = getTrackedSet(key);
+
+  return `
+    <div class="set-row">
+      <input
+        class="set-check"
+        type="checkbox"
+        data-track-key="${key}"
+        ${tracked.checked ? "checked" : ""}
+      />
+      <div class="set-label">${label}</div>
+      <input
+        class="set-note ${tracked.note ? "saved-note" : ""}"
+        type="text"
+        data-note-key="${key}"
+        value="${tracked.note || ""}"
+        placeholder="notes / actual reps"
+      />
+    </div>
+  `;
+}
+
+function renderWarmupLabel(warmup) {
   if (warmup.label) return `${warmup.label} x ${warmup.reps}`;
   return `${warmup.weight} x ${warmup.reps}`;
 }
 
-function renderSet(set) {
+function renderSetLabel(set) {
   if (typeof set.weight === "string") {
     return `${set.weight} x ${set.reps}`;
   }
@@ -30,10 +96,33 @@ function renderBigLift(bigLift) {
       ${bigLift.notes ? `<p class="lift-meta"><em>${bigLift.notes}</em></p>` : ""}
 
       <div class="block-title">Warmups</div>
-      ${bigLift.warmups.map(warmup => `<div class="set-line">${renderWarmup(warmup)}</div>`).join("")}
+      ${bigLift.warmups.map(warmup => `<div class="set-line">${renderWarmupLabel(warmup)}</div>`).join("")}
 
       <div class="block-title">Work Sets</div>
-      ${bigLift.sets.map(set => `<div class="set-line">${renderSet(set)}</div>`).join("")}
+      ${bigLift.sets.map(set => `<div class="set-line">${renderSetLabel(set)}</div>`).join("")}
+    </div>
+  `;
+}
+
+function renderBigLiftTracked(bigLift, weekIndex, dayIndex, liftIndex, sectionPrefix) {
+  const warmupsHtml = bigLift.warmups.map((warmup, warmupIndex) => {
+    const key = getTrackingKey(sectionPrefix, weekIndex, dayIndex, liftIndex, "warmup", warmupIndex);
+    return renderTrackedSetLine(renderWarmupLabel(warmup), key);
+  }).join("");
+
+  const setsHtml = bigLift.sets.map((set, setIndex) => {
+    const key = getTrackingKey(sectionPrefix, weekIndex, dayIndex, liftIndex, "work", setIndex);
+    return renderTrackedSetLine(renderSetLabel(set), key);
+  }).join("");
+
+  return `
+    <div class="nested-card">
+      <strong>${bigLift.lift}</strong>
+      ${bigLift.notes ? `<p class="lift-meta"><em>${bigLift.notes}</em></p>` : ""}
+      <div class="block-title">Warmups</div>
+      ${warmupsHtml}
+      <div class="block-title">Work Sets</div>
+      ${setsHtml}
     </div>
   `;
 }
@@ -53,6 +142,28 @@ function renderInfinityForge(boss) {
       </div>
 
       <div class="lift-block">
+        <div class="block-title">Titan Circuit</div>
+        ${boss.titanCircuit.map(item => `<div class="set-line">${item.name} — ${item.prescription}</div>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderInfinityForgeTracked(boss, weekIndex, dayIndex) {
+  return `
+    <div class="nested-card">
+      <h4>${boss.title}</h4>
+      <p class="muted-text">${boss.subtitle}</p>
+
+      ${boss.bigLifts.map((bigLift, liftIndex) => renderBigLiftTracked(bigLift, weekIndex, dayIndex, liftIndex, "today")).join("")}
+
+      <div class="nested-card">
+        <div class="block-title">Forge Movement</div>
+        <div>${boss.forgeMovement.name} — ${boss.forgeMovement.prescription}</div>
+        ${boss.forgeMovement.notes ? `<p class="lift-meta"><em>${boss.forgeMovement.notes}</em></p>` : ""}
+      </div>
+
+      <div class="nested-card">
         <div class="block-title">Titan Circuit</div>
         ${boss.titanCircuit.map(item => `<div class="set-line">${item.name} — ${item.prescription}</div>`).join("")}
       </div>
@@ -138,8 +249,9 @@ function renderTodayWorkout() {
     todayWorkout.innerHTML = `
       <h3 class="today-title">Week ${week.number} — ${week.name}</h3>
       <p class="today-subtitle"><strong>${day.title}</strong></p>
-      ${renderInfinityForge(day.infinityForge)}
+      ${renderInfinityForgeTracked(day.infinityForge, weekIndex, dayIndex)}
     `;
+    attachTrackingListeners();
     return;
   }
 
@@ -147,24 +259,52 @@ function renderTodayWorkout() {
     <h3 class="today-title">Week ${week.number} — ${week.name}</h3>
     <p class="today-subtitle"><strong>${day.title}</strong></p>
 
-    ${day.bigLifts.map(bigLift => `
-      <div class="nested-card">
-        <strong>${bigLift.lift}</strong>
-        ${bigLift.notes ? `<p class="lift-meta"><em>${bigLift.notes}</em></p>` : ""}
-        ${bigLift.sets.map(set => `<div class="set-line">${renderSet(set)}</div>`).join("")}
-      </div>
-    `).join("")}
+    ${day.bigLifts.map((bigLift, liftIndex) =>
+      renderBigLiftTracked(bigLift, weekIndex, dayIndex, liftIndex, "today")
+    ).join("")}
 
     <div class="nested-card">
       <div class="block-title">Forge Movement</div>
       <div>${day.forgeMovement.name} — ${day.forgeMovement.prescription}</div>
+      ${day.forgeMovement.notes ? `<p class="lift-meta"><em>${day.forgeMovement.notes}</em></p>` : ""}
     </div>
 
     <div class="nested-card">
       <div class="block-title">${day.thrusterLadder.name}</div>
       <div>${day.thrusterLadder.reps.join(" / ")}</div>
+      ${day.thrusterLadder.notes ? `<p class="lift-meta"><em>${day.thrusterLadder.notes}</em></p>` : ""}
+    </div>
+
+    <div class="nested-card">
+      <div class="block-title">Optional</div>
+      <div>${day.optional.name} — ${day.optional.prescription}</div>
     </div>
   `;
+
+  attachTrackingListeners();
+}
+
+function attachTrackingListeners() {
+  document.querySelectorAll("[data-track-key]").forEach((checkbox) => {
+    checkbox.addEventListener("change", (event) => {
+      const key = event.target.getAttribute("data-track-key");
+      updateTrackedSet(key, { checked: event.target.checked });
+    });
+  });
+
+  document.querySelectorAll("[data-note-key]").forEach((input) => {
+    input.addEventListener("change", (event) => {
+      const key = event.target.getAttribute("data-note-key");
+      updateTrackedSet(key, { note: event.target.value.trim() });
+      event.target.classList.toggle("saved-note", !!event.target.value.trim());
+    });
+
+    input.addEventListener("blur", (event) => {
+      const key = event.target.getAttribute("data-note-key");
+      updateTrackedSet(key, { note: event.target.value.trim() });
+      event.target.classList.toggle("saved-note", !!event.target.value.trim());
+    });
+  });
 }
 
 function renderLogs() {
@@ -261,6 +401,7 @@ profileForm?.addEventListener("submit", (event) => {
   state.profile = profile;
   state.program = generateProgram(profile.maxes);
   state.currentWorkout = { weekIndex: 0, dayIndex: 0 };
+  state.setTracking = {};
 
   saveAppData(state);
   renderProgram();
@@ -302,6 +443,7 @@ scorecardForm?.addEventListener("submit", (event) => {
   if (state.profile?.maxes) {
     state.program = generateProgram(state.profile.maxes);
     state.currentWorkout = { weekIndex: 0, dayIndex: 0 };
+    state.setTracking = {};
   }
 
   saveAppData(state);
@@ -313,6 +455,11 @@ scorecardForm?.addEventListener("submit", (event) => {
 
 prevWorkoutBtn?.addEventListener("click", () => moveWorkout(-1));
 nextWorkoutBtn?.addEventListener("click", () => moveWorkout(1));
+
+resetWorkoutChecksBtn?.addEventListener("click", () => {
+  clearCurrentWorkoutTracking();
+  renderTodayWorkout();
+});
 
 setTimeout(() => {
   const loading = document.getElementById("loading-screen");

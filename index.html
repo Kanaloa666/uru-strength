@@ -1,137 +1,301 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>URU Strength</title>
-  <link rel="stylesheet" href="assets/css/styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>URU Strength</title>
+
+<link rel="stylesheet" href="./assets/css/styles.css">
+
 </head>
+
+
 <body>
 
-  <!-- LOADING OVERLAY -->
-  <div id="loading-screen" class="loading-screen">
-    <div class="loading-panel">
-      <div class="forge-loader">
-        <div class="forge-ring"></div>
-        <div class="forge-core"></div>
-      </div>
-      <h1>URU Strength</h1>
-      <p id="loading-text" class="muted-text">Initializing forge...</p>
-      <div class="loading-bar-shell">
-        <div id="loading-bar" class="loading-bar"></div>
-      </div>
+<!-- ========================= -->
+<!-- LOADING SCREEN -->
+<!-- ========================= -->
+
+<div id="loading-screen" class="loading-screen">
+
+  <div class="loading-panel">
+
+    <div class="forge-loader">
+      <div class="forge-ring"></div>
+      <div class="forge-core"></div>
     </div>
+
+    <h1>URU Strength</h1>
+
+    <p id="loading-text" class="muted-text">
+      Initializing forge...
+    </p>
+
+    <div class="loading-bar-shell">
+      <div id="loading-bar" class="loading-bar"></div>
+    </div>
+
   </div>
 
-  <!-- SCREEN 1: PROFILE -->
-  <main id="screen-profile" class="app-shell screen hidden">
-    <header class="hero">
-      <h1>URU Strength</h1>
-      <p>Forge the frame. Reforge the numbers. Become the weapon.</p>
-    </header>
+</div>
 
-    <section class="card hud-card">
-      <h2>Forge Profile</h2>
-      <p class="muted-text">Enter maxes once. The forge generates weights automatically.</p>
 
-      <form id="profile-form">
-        <input id="name" type="text" placeholder="Name" />
-        <input id="bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
+<!-- ========================= -->
+<!-- PROFILE SCREEN -->
+<!-- ========================= -->
 
-        <input id="bench" type="number" placeholder="Bench Max" />
-        <input id="squat" type="number" placeholder="Squat Max" />
-        <input id="deadlift" type="number" placeholder="Deadlift Max" />
-        <input id="sgdl" type="number" placeholder="Snatch Grip Deadlift Max" />
+<main id="screen-profile" class="app-shell screen hidden">
 
-        <button type="submit">Forge New Cycle</button>
-      </form>
+<header class="hero">
 
-      <p class="muted-text top-gap">Tip: use a training max if you want consistent progress.</p>
-    </section>
-  </main>
+<h1>URU Strength</h1>
 
-  <!-- SCREEN 2: DASHBOARD -->
-  <main id="screen-dashboard" class="app-shell screen hidden">
+<p>
+Forge the frame. Reforge the numbers. Become the weapon.
+</p>
 
-    <header class="hero">
-      <h1>URU Strength</h1>
-      <p>Forge HUD → Forge Directive → Execute.</p>
-    </header>
+</header>
 
-    <section class="card hud-card">
-      <div class="archive-header">
-        <h2>Forge HUD</h2>
-        <div class="button-row">
-          <button type="button" id="btn-gym-mode" class="secondary-btn">Gym Mode: OFF</button>
-          <button type="button" id="btn-edit-profile" class="secondary-btn">Edit Profile</button>
-        </div>
-      </div>
-      <div id="forge-hud">
-        <p>No cycle forged yet.</p>
-      </div>
-    </section>
 
-    <section class="card">
-      <div class="archive-header">
-        <h2>Forge Directive</h2>
-        <div class="button-row">
-          <button type="button" id="btn-reset-checks" class="secondary-btn">Reset Checks</button>
-        </div>
-      </div>
+<section class="card hud-card">
 
-      <div id="today-workout">
-        <p>No directive loaded yet.</p>
-      </div>
+<h2>Forge Profile</h2>
 
-      <div class="button-row top-gap">
-        <button type="button" id="prev-workout" class="secondary-btn">Previous Directive</button>
-        <button type="button" id="next-workout" class="secondary-btn">Next Directive</button>
-      </div>
-    </section>
+<p class="muted-text">
+Enter maxes once. The forge generates weights automatically.
+</p>
 
-    <section class="card">
-      <div class="archive-header">
-        <h2>Forge Archive</h2>
-        <button type="button" id="toggle-archive" class="secondary-btn">Expand</button>
-      </div>
-      <div id="program-output" class="archive-collapsed"></div>
-    </section>
+<form id="profile-form">
 
-    <section class="card">
-      <h2>War Log</h2>
+<input id="name" type="text" placeholder="Name">
 
-      <form id="daily-log-form">
-        <input id="log-date" type="date" />
-        <input id="log-bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
-        <input id="log-workout" type="text" placeholder="Directive completed" />
-        <textarea id="log-notes" placeholder="How did it feel?"></textarea>
-        <button type="submit">Save War Log</button>
-      </form>
+<input id="bodyweight" type="number" step="0.1" placeholder="Bodyweight">
 
-      <div id="log-history"></div>
-    </section>
+<input id="bench" type="number" placeholder="Bench Max">
 
-    <section class="card">
-      <h2>Reforging Record (Final Boss)</h2>
-      <p class="muted-text">Save after Infinity Forge. Top sets become your new numbers.</p>
+<input id="squat" type="number" placeholder="Squat Max">
 
-      <form id="scorecard-form">
-        <input id="score-date" type="date" />
-        <input id="score-bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
-        <input id="score-bench-top" type="number" placeholder="Bench Top Set" />
-        <input id="score-sgdl-top" type="number" placeholder="SGDL / Deadlift Top Set" />
-        <input id="score-thruster-load" type="number" placeholder="Thruster Load" />
-        <input id="score-thruster-time" type="text" placeholder="Thruster Time mm:ss" />
-        <input id="score-circuit-rounds" type="number" placeholder="Circuit Rounds" />
-        <textarea id="score-notes" placeholder="Final boss notes"></textarea>
-        <button type="submit">Save Record + Reforge</button>
-      </form>
+<input id="deadlift" type="number" placeholder="Deadlift Max">
 
-      <div id="scorecard-history"></div>
-    </section>
+<input id="sgdl" type="number" placeholder="Snatch Grip Deadlift Max">
 
-  </main>
+<button type="submit">
+Forge New Cycle
+</button>
 
-  <script src="assets/js/app.js"></script>
+</form>
+
+<p class="muted-text top-gap">
+Tip: use a training max if you want consistent progress.
+</p>
+
+</section>
+
+</main>
+
+
+<!-- ========================= -->
+<!-- DASHBOARD -->
+<!-- ========================= -->
+
+<main id="screen-dashboard" class="app-shell screen hidden">
+
+
+<header class="hero">
+
+<h1>URU Strength</h1>
+
+<p>
+Forge HUD → Forge Directive → Execute
+</p>
+
+</header>
+
+
+<!-- ========================= -->
+<!-- HUD -->
+<!-- ========================= -->
+
+<section class="card hud-card">
+
+<div class="archive-header">
+
+<h2>Forge HUD</h2>
+
+<div class="button-row">
+
+<button id="btn-gym-mode" class="secondary-btn">
+Gym Mode: OFF
+</button>
+
+<button id="btn-edit-profile" class="secondary-btn">
+Edit Profile
+</button>
+
+</div>
+
+</div>
+
+<div id="forge-hud">
+
+<p>No cycle forged yet.</p>
+
+</div>
+
+</section>
+
+
+
+<!-- ========================= -->
+<!-- DIRECTIVE -->
+<!-- ========================= -->
+
+<section class="card">
+
+<div class="archive-header">
+
+<h2>Forge Directive</h2>
+
+<div class="button-row">
+
+<button id="btn-reset-checks" class="secondary-btn">
+Reset Checks
+</button>
+
+</div>
+
+</div>
+
+<div id="today-workout">
+
+<p>No directive loaded yet.</p>
+
+</div>
+
+
+<div class="button-row top-gap">
+
+<button id="prev-workout" class="secondary-btn">
+Previous Directive
+</button>
+
+<button id="next-workout" class="secondary-btn">
+Next Directive
+</button>
+
+</div>
+
+</section>
+
+
+
+<!-- ========================= -->
+<!-- ARCHIVE -->
+<!-- ========================= -->
+
+<section class="card">
+
+<div class="archive-header">
+
+<h2>Forge Archive</h2>
+
+<button id="toggle-archive" class="secondary-btn">
+Expand
+</button>
+
+</div>
+
+<div id="program-output" class="archive-collapsed"></div>
+
+</section>
+
+
+
+<!-- ========================= -->
+<!-- WAR LOG -->
+<!-- ========================= -->
+
+<section class="card">
+
+<h2>War Log</h2>
+
+<form id="daily-log-form">
+
+<input id="log-date" type="date">
+
+<input id="log-bodyweight" type="number" step="0.1" placeholder="Bodyweight">
+
+<input id="log-workout" type="text" placeholder="Directive completed">
+
+<textarea id="log-notes" placeholder="How did it feel?"></textarea>
+
+<button type="submit">
+Save War Log
+</button>
+
+</form>
+
+<div id="log-history"></div>
+
+</section>
+
+
+
+<!-- ========================= -->
+<!-- SCORECARD -->
+<!-- ========================= -->
+
+<section class="card">
+
+<h2>Reforging Record (Final Boss)</h2>
+
+<p class="muted-text">
+Save after Infinity Forge. Top sets become your new numbers.
+</p>
+
+<form id="scorecard-form">
+
+<input id="score-date" type="date">
+
+<input id="score-bodyweight" type="number" step="0.1" placeholder="Bodyweight">
+
+<input id="score-bench-top" type="number" placeholder="Bench Top Set">
+
+<input id="score-sgdl-top" type="number" placeholder="SGDL / Deadlift Top Set">
+
+<input id="score-thruster-load" type="number" placeholder="Thruster Load">
+
+<input id="score-thruster-time" type="text" placeholder="Thruster Time mm:ss">
+
+<input id="score-circuit-rounds" type="number" placeholder="Circuit Rounds">
+
+<textarea id="score-notes" placeholder="Final boss notes"></textarea>
+
+<button type="submit">
+Save Record + Reforge
+</button>
+
+</form>
+
+<div id="scorecard-history"></div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- ========================= -->
+<!-- JAVASCRIPT -->
+<!-- ========================= -->
+
+<script src="./assets/js/storage.js"></script>
+<script src="./assets/js/program.js"></script>
+<script src="./assets/js/scorecard.js"></script>
+<script src="./assets/js/app.js"></script>
+
 </body>
 </html>

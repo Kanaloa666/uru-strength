@@ -15,12 +15,101 @@ function renderProgram() {
 
   programOutput.innerHTML = `
     <h3>${state.program.cycleName}</h3>
-    <p>Bench 70%: ${state.program.preview.bench70} lb</p>
-    <p>Squat 70%: ${state.program.preview.squat70} lb</p>
-    <p>SGDL 65%: ${state.program.preview.sgdl65} lb</p>
-    <ul>
-      ${state.program.weeks.map(week => `<li><strong>${week.name}</strong> — ${week.focus}</li>`).join("")}
-    </ul>
+    ${state.program.weeks.map(renderWeekCard).join("")}
+  `;
+}
+
+function renderWeekCard(week) {
+  return `
+    <div class="card">
+      <h3>Week ${week.number} — ${week.name}</h3>
+      <p>${week.focus}</p>
+      ${week.days.map(renderDayCard).join("")}
+    </div>
+  `;
+}
+
+function renderDayCard(day) {
+  if (day.infinityForge) {
+    return renderInfinityForge(day.infinityForge);
+  }
+
+  return `
+    <div class="card">
+      <h4>${day.title}</h4>
+      ${day.bigLifts.map(renderBigLift).join("")}
+      <div>
+        <strong>Forge Movement:</strong><br>
+        ${day.forgeMovement.name} — ${day.forgeMovement.prescription}<br>
+        <em>${day.forgeMovement.notes || ""}</em>
+      </div>
+      <br>
+      <div>
+        <strong>${day.thrusterLadder.name}:</strong><br>
+        ${day.thrusterLadder.reps.join(" / ")}<br>
+        <em>${day.thrusterLadder.notes || ""}</em>
+      </div>
+      <br>
+      <div>
+        <strong>Optional:</strong><br>
+        ${day.optional.name} — ${day.optional.prescription}
+      </div>
+    </div>
+  `;
+}
+
+function renderBigLift(bigLift) {
+  return `
+    <div style="margin-bottom:16px;">
+      <strong>${bigLift.lift}</strong><br>
+      <span>Based on max: ${bigLift.basedOnMax} lb</span><br>
+      ${bigLift.tempo ? `<span><em>${bigLift.tempo}</em></span><br>` : ""}
+      ${bigLift.pause ? `<span><em>${bigLift.pause}</em></span><br>` : ""}
+      <div style="margin-top:8px;">
+        <strong>Warmups</strong><br>
+        ${bigLift.warmups.map(renderWarmup).join("<br>")}
+      </div>
+      <div style="margin-top:8px;">
+        <strong>Work Sets</strong><br>
+        ${bigLift.sets.map(renderSet).join("<br>")}
+      </div>
+    </div>
+  `;
+}
+
+function renderWarmup(warmup) {
+  if (warmup.label) {
+    return `${warmup.label} x ${warmup.reps}`;
+  }
+  return `${warmup.weight} x ${warmup.reps}`;
+}
+
+function renderSet(set) {
+  return `${set.weight} x ${set.reps} <span style="color:#9fb0cf;">(${Math.round(set.pct * 1000) / 10}%)</span>`;
+}
+
+function renderInfinityForge(boss) {
+  return `
+    <div class="card">
+      <h4>${boss.title}</h4>
+      <p>${boss.subtitle}</p>
+      ${boss.bigLifts.map(renderBigLift).join("")}
+      <div>
+        <strong>Forge Movement:</strong><br>
+        ${boss.forgeMovement.name} — ${boss.forgeMovement.prescription}<br>
+        <em>${boss.forgeMovement.notes}</em>
+      </div>
+      <br>
+      <div>
+        <strong>Titan Circuit</strong><br>
+        ${boss.titanCircuit.map(item => `${item.name} — ${item.prescription}`).join("<br>")}
+      </div>
+      <br>
+      <div>
+        <strong>Scorecard Fields</strong><br>
+        ${boss.scorecardFields.join("<br>")}
+      </div>
+    </div>
   `;
 }
 

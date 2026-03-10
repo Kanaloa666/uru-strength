@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>URU Strength</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-panel">
+      <h1>URU Strength</h1>
+      <p>Forging your next cycle...</p>
+    </div>
+  </div>
+
+  <main class="app-shell">
+    <header class="hero">
+      <h1>URU Strength</h1>
+      <p>Forge your frame. Track the cycle. Beat the final boss.</p>
+    </header>
+
+    <section class="card">
+      <h2>Profile + Maxes</h2>
+      <form id="profile-form">
+        <input id="name" type="text" placeholder="Name" />
+        <input id="bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
+        <input id="bench" type="number" placeholder="Bench max" />
+        <input id="squat" type="number" placeholder="Squat max" />
+        <input id="deadlift" type="number" placeholder="Deadlift max" />
+        <input id="sgdl" type="number" placeholder="SGDL max" />
+        <button type="submit">Generate Cycle</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Current 4-Week Cycle</h2>
+      <div id="program-output"></div>
+    </section>
+
+    <section class="card">
+      <h2>Daily Log</h2>
+      <form id="daily-log-form">
+        <input id="log-date" type="date" />
+        <input id="log-bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
+        <input id="log-workout" type="text" placeholder="Workout" />
+        <textarea id="log-notes" placeholder="How did it feel?"></textarea>
+        <button type="submit">Save Log</button>
+      </form>
+      <div id="log-history"></div>
+    </section>
+
+    <section class="card">
+      <h2>Infinity Forge Scorecard</h2>
+      <form id="scorecard-form">
+        <input id="score-date" type="date" />
+        <input id="score-bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
+        <input id="score-bench-top" type="number" placeholder="Bench top set" />
+        <input id="score-sgdl-top" type="number" placeholder="SGDL top set" />
+        <input id="score-thruster-load" type="number" placeholder="Thruster load" />
+        <input id="score-thruster-time" type="text" placeholder="Thruster time mm:ss" />
+        <input id="score-circuit-rounds" type="number" placeholder="Circuit rounds" />
+        <textarea id="score-notes" placeholder="Boss fight notes"></textarea>
+        <button type="submit">Save Scorecard</button>
+      </form>
+      <div id="scorecard-history"></div>
+    </section>
+  </main>
+
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/program.js"></script>
+  <script src="assets/js/scorecard.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

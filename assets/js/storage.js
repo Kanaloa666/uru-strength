@@ -1,4 +1,4 @@
-const URU_STORAGE_KEY = "uru_strength_v2";
+const URU_STORAGE_KEY = "uru_strength_v3";
 
 function getDefaultData() {
   return {
@@ -9,7 +9,8 @@ function getDefaultData() {
     currentWorkout: {
       weekIndex: 0,
       dayIndex: 0
-    }
+    },
+    setTracking: {}
   };
 }
 

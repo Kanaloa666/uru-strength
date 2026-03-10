@@ -8,6 +8,7 @@
 </head>
 <body>
 
+  <!-- LOADING OVERLAY -->
   <div id="loading-screen" class="loading-screen">
     <div class="loading-panel">
       <div class="forge-loader">
@@ -15,22 +16,53 @@
         <div class="forge-core"></div>
       </div>
       <h1>URU Strength</h1>
-      <p id="loading-text">Initializing forge...</p>
+      <p id="loading-text" class="muted-text">Initializing forge...</p>
       <div class="loading-bar-shell">
         <div id="loading-bar" class="loading-bar"></div>
       </div>
     </div>
   </div>
 
-  <main class="app-shell">
-
+  <!-- SCREEN 1: PROFILE -->
+  <main id="screen-profile" class="app-shell screen hidden">
     <header class="hero">
       <h1>URU Strength</h1>
       <p>Forge the frame. Reforge the numbers. Become the weapon.</p>
     </header>
 
     <section class="card hud-card">
-      <h2>Forge HUD</h2>
+      <h2>Forge Profile</h2>
+      <p class="muted-text">Enter maxes once. The forge will generate your cycle weights automatically.</p>
+
+      <form id="profile-form">
+        <input id="name" type="text" placeholder="Name" />
+        <input id="bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
+
+        <input id="bench" type="number" placeholder="Bench Max" />
+        <input id="squat" type="number" placeholder="Squat Max" />
+        <input id="deadlift" type="number" placeholder="Deadlift Max" />
+        <input id="sgdl" type="number" placeholder="Snatch Grip Deadlift Max" />
+
+        <button type="submit">Forge New Cycle</button>
+      </form>
+
+      <p class="muted-text top-gap">Tip: use a training max if you want more consistent progress.</p>
+    </section>
+  </main>
+
+  <!-- SCREEN 2: DASHBOARD -->
+  <main id="screen-dashboard" class="app-shell screen hidden">
+
+    <header class="hero">
+      <h1>URU Strength</h1>
+      <p>Forge HUD → Forge Directive → Execute.</p>
+    </header>
+
+    <section class="card hud-card">
+      <div class="archive-header">
+        <h2>Forge HUD</h2>
+        <button type="button" id="btn-edit-profile" class="secondary-btn">Edit Profile</button>
+      </div>
       <div id="forge-hud">
         <p>No cycle forged yet.</p>
       </div>
@@ -43,34 +75,21 @@
       </div>
 
       <div class="button-row top-gap">
-        <button type="button" id="prev-workout" class="secondary-btn">Previous Directive</button>
-        <button type="button" id="next-workout" class="secondary-btn">Next Directive</button>
-        <button type="button" id="reset-workout-checks" class="secondary-btn">Reset Checks</button>
+        <button type="button" id="prev-workout" class="secondary-btn">Previous</button>
+        <button type="button" id="next-workout" class="secondary-btn">Next</button>
       </div>
     </section>
 
     <section class="card">
-      <h2>Forge Profile + Maxes</h2>
-
-      <form id="profile-form">
-        <input id="name" type="text" placeholder="Name" />
-        <input id="bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
-        <input id="bench" type="number" placeholder="Bench Max" />
-        <input id="squat" type="number" placeholder="Squat Max" />
-        <input id="deadlift" type="number" placeholder="Deadlift Max" />
-        <input id="sgdl" type="number" placeholder="Snatch Grip Deadlift Max" />
-        <button type="submit">Forge New Cycle</button>
-      </form>
-    </section>
-
-    <section class="card">
-      <h2>Forge Archive</h2>
-      <div id="program-output"></div>
+      <div class="archive-header">
+        <h2>Forge Archive</h2>
+        <button type="button" id="toggle-archive" class="secondary-btn">Expand</button>
+      </div>
+      <div id="program-output" class="archive-collapsed"></div>
     </section>
 
     <section class="card">
       <h2>War Log</h2>
-
       <form id="daily-log-form">
         <input id="log-date" type="date" />
         <input id="log-bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
@@ -78,23 +97,23 @@
         <textarea id="log-notes" placeholder="How did it feel?"></textarea>
         <button type="submit">Save War Log</button>
       </form>
-
       <div id="log-history"></div>
     </section>
 
     <section class="card">
-      <h2>Reforging Record</h2>
+      <h2>Reforging Record (Final Boss)</h2>
+      <p class="muted-text">Save this after Infinity Forge. Top sets become your new numbers.</p>
 
       <form id="scorecard-form">
         <input id="score-date" type="date" />
         <input id="score-bodyweight" type="number" step="0.1" placeholder="Bodyweight" />
         <input id="score-bench-top" type="number" placeholder="Bench Top Set" />
-        <input id="score-sgdl-top" type="number" placeholder="SGDL Top Set" />
+        <input id="score-sgdl-top" type="number" placeholder="SGDL / Deadlift Top Set" />
         <input id="score-thruster-load" type="number" placeholder="Thruster Load" />
         <input id="score-thruster-time" type="text" placeholder="Thruster Time mm:ss" />
         <input id="score-circuit-rounds" type="number" placeholder="Circuit Rounds" />
         <textarea id="score-notes" placeholder="Final boss notes"></textarea>
-        <button type="submit">Save Record</button>
+        <button type="submit">Save Record + Reforge</button>
       </form>
 
       <div id="scorecard-history"></div>

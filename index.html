@@ -1,301 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>URU Strength</title>
-
-<link rel="stylesheet" href="./assets/css/styles.css">
-
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <title>URU Strength Forge</title>
+  <meta name="theme-color" content="#090b10" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-
-
 <body>
+  <div id="app" class="app-shell">
+    <!-- LOADING SCREEN -->
+    <section id="loading-screen" class="screen active">
+      <div class="loading-wrap">
+        <div class="loading-core">
+          <div class="ring ring-1"></div>
+          <div class="ring ring-2"></div>
+          <div class="ring ring-3"></div>
+          <div class="core-glow"></div>
+        </div>
 
-<!-- ========================= -->
-<!-- LOADING SCREEN -->
-<!-- ========================= -->
+        <div class="loading-copy">
+          <p class="eyebrow">URU STRENGTH FORGE</p>
+          <h1>Initializing Forge Systems</h1>
+          <p class="muted">
+            Calibrating directive engine, syncing archive, priming the next cycle.
+          </p>
+        </div>
 
-<div id="loading-screen" class="loading-screen">
+        <div class="progress-block">
+          <div class="progress-bar">
+            <div id="loading-bar-fill" class="progress-fill"></div>
+          </div>
+          <p id="loading-status" class="progress-text">Powering core...</p>
+        </div>
+      </div>
+    </section>
 
-  <div class="loading-panel">
+    <!-- PROFILE SCREEN -->
+    <section id="profile-screen" class="screen">
+      <div class="panel profile-panel">
+        <div class="panel-header">
+          <p class="eyebrow">FORGE PROFILE</p>
+          <h2>Set Your Working Profile</h2>
+          <p class="muted">
+            Lock in your name, cycle, and core lifts before entering the HUD.
+          </p>
+        </div>
 
-    <div class="forge-loader">
-      <div class="forge-ring"></div>
-      <div class="forge-core"></div>
-    </div>
+        <form id="profile-form" class="form-grid">
+          <label class="field">
+            <span>Operator Name</span>
+            <input type="text" id="name" placeholder="John" />
+          </label>
 
-    <h1>URU Strength</h1>
+          <label class="field">
+            <span>Current Cycle</span>
+            <input type="text" id="cycleName" placeholder="Cycle 01 // Base Build" />
+          </label>
 
-    <p id="loading-text" class="muted-text">
-      Initializing forge...
-    </p>
+          <label class="field">
+            <span>Bench Max</span>
+            <input type="number" id="benchMax" min="0" step="1" placeholder="225" />
+          </label>
 
-    <div class="loading-bar-shell">
-      <div id="loading-bar" class="loading-bar"></div>
-    </div>
+          <label class="field">
+            <span>Squat Max</span>
+            <input type="number" id="squatMax" min="0" step="1" placeholder="315" />
+          </label>
 
+          <label class="field">
+            <span>Deadlift Max</span>
+            <input type="number" id="deadliftMax" min="0" step="1" placeholder="285" />
+          </label>
+
+          <label class="field field-full">
+            <span>Forge Notes</span>
+            <textarea
+              id="profileNotes"
+              rows="4"
+              placeholder="Examples: heavy bench focus, snatch-grip deadlift emphasis, keep sessions under an hour..."
+            ></textarea>
+          </label>
+
+          <div class="actions field-full">
+            <button type="submit" class="btn btn-primary">Enter Forge HUD</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- HUD SCREEN -->
+    <section id="hud-screen" class="screen">
+      <header class="hud-topbar">
+        <div>
+          <p class="eyebrow">FORGE HUD</p>
+          <h1 id="hud-title">Welcome back, Operator</h1>
+        </div>
+
+        <div class="topbar-actions">
+          <button id="edit-profile-btn" class="btn btn-secondary" type="button">Edit Profile</button>
+          <button id="reset-all-btn" class="btn btn-danger" type="button">Reset Forge</button>
+        </div>
+      </header>
+
+      <main class="hud-grid">
+        <section class="panel directive-panel">
+          <div class="panel-header">
+            <p class="eyebrow">TODAY’S DIRECTIVE</p>
+            <h2 id="directive-title">Heavy Bench / Pull / Arms</h2>
+            <p id="directive-subtitle" class="muted">
+              Primary objective for the current session.
+            </p>
+          </div>
+
+          <div class="directive-layout">
+            <div class="directive-card">
+              <h3>Warmups</h3>
+              <ul id="warmup-list" class="clean-list"></ul>
+            </div>
+
+            <div class="directive-card">
+              <h3>Working Sets</h3>
+              <ul id="working-list" class="clean-list"></ul>
+            </div>
+
+            <div class="directive-card note-card">
+              <h3>Directive Notes</h3>
+              <textarea
+                id="daily-notes"
+                rows="6"
+                placeholder="How did today move? Tight hips? Bench felt strong? Deadlifts easy off the floor?"
+              ></textarea>
+              <button id="save-notes-btn" class="btn btn-primary" type="button">Save Notes</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel status-panel">
+          <div class="panel-header">
+            <p class="eyebrow">FORGE STATUS</p>
+            <h2>Current Output</h2>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-card">
+              <span class="stat-label">Cycle</span>
+              <strong id="stat-cycle">Cycle 01</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Bench</span>
+              <strong id="stat-bench">225</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Squat</span>
+              <strong id="stat-squat">315</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Deadlift</span>
+              <strong id="stat-deadlift">285</strong>
+            </div>
+          </div>
+
+          <div class="lift-log">
+            <h3>Actual Lift Tracking</h3>
+
+            <div class="field">
+              <span>Exercise</span>
+              <select id="log-exercise">
+                <option value="Bench Press">Bench Press</option>
+                <option value="Back Squat">Back Squat</option>
+                <option value="Snatch-Grip Deadlift">Snatch-Grip Deadlift</option>
+                <option value="Barbell Curl">Barbell Curl</option>
+              </select>
+            </div>
+
+            <div class="two-col">
+              <label class="field">
+                <span>Weight</span>
+                <input id="log-weight" type="number" min="0" step="1" placeholder="245" />
+              </label>
+
+              <label class="field">
+                <span>Reps</span>
+                <input id="log-reps" type="number" min="0" step="1" placeholder="3" />
+              </label>
+            </div>
+
+            <button id="save-lift-btn" class="btn btn-primary" type="button">Log Set</button>
+          </div>
+        </section>
+
+        <section class="panel archive-panel">
+          <button id="archive-toggle" class="archive-toggle" type="button" aria-expanded="false">
+            <span>Forge Archive</span>
+            <span id="archive-toggle-icon">+</span>
+          </button>
+
+          <div id="archive-content" class="archive-content collapsed">
+            <div class="archive-inner">
+              <div class="archive-block">
+                <h3>Recent Logged Sets</h3>
+                <div id="recent-lifts" class="stack-list"></div>
+              </div>
+
+              <div class="archive-block">
+                <h3>Profile Notes</h3>
+                <p id="archive-profile-notes" class="muted">
+                  No forge notes saved yet.
+                </p>
+              </div>
+
+              <div class="archive-block">
+                <h3>Saved Directive Notes</h3>
+                <p id="archive-daily-notes" class="muted">
+                  No directive notes saved yet.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </section>
   </div>
 
-</div>
-
-
-<!-- ========================= -->
-<!-- PROFILE SCREEN -->
-<!-- ========================= -->
-
-<main id="screen-profile" class="app-shell screen hidden">
-
-<header class="hero">
-
-<h1>URU Strength</h1>
-
-<p>
-Forge the frame. Reforge the numbers. Become the weapon.
-</p>
-
-</header>
-
-
-<section class="card hud-card">
-
-<h2>Forge Profile</h2>
-
-<p class="muted-text">
-Enter maxes once. The forge generates weights automatically.
-</p>
-
-<form id="profile-form">
-
-<input id="name" type="text" placeholder="Name">
-
-<input id="bodyweight" type="number" step="0.1" placeholder="Bodyweight">
-
-<input id="bench" type="number" placeholder="Bench Max">
-
-<input id="squat" type="number" placeholder="Squat Max">
-
-<input id="deadlift" type="number" placeholder="Deadlift Max">
-
-<input id="sgdl" type="number" placeholder="Snatch Grip Deadlift Max">
-
-<button type="submit">
-Forge New Cycle
-</button>
-
-</form>
-
-<p class="muted-text top-gap">
-Tip: use a training max if you want consistent progress.
-</p>
-
-</section>
-
-</main>
-
-
-<!-- ========================= -->
-<!-- DASHBOARD -->
-<!-- ========================= -->
-
-<main id="screen-dashboard" class="app-shell screen hidden">
-
-
-<header class="hero">
-
-<h1>URU Strength</h1>
-
-<p>
-Forge HUD → Forge Directive → Execute
-</p>
-
-</header>
-
-
-<!-- ========================= -->
-<!-- HUD -->
-<!-- ========================= -->
-
-<section class="card hud-card">
-
-<div class="archive-header">
-
-<h2>Forge HUD</h2>
-
-<div class="button-row">
-
-<button id="btn-gym-mode" class="secondary-btn">
-Gym Mode: OFF
-</button>
-
-<button id="btn-edit-profile" class="secondary-btn">
-Edit Profile
-</button>
-
-</div>
-
-</div>
-
-<div id="forge-hud">
-
-<p>No cycle forged yet.</p>
-
-</div>
-
-</section>
-
-
-
-<!-- ========================= -->
-<!-- DIRECTIVE -->
-<!-- ========================= -->
-
-<section class="card">
-
-<div class="archive-header">
-
-<h2>Forge Directive</h2>
-
-<div class="button-row">
-
-<button id="btn-reset-checks" class="secondary-btn">
-Reset Checks
-</button>
-
-</div>
-
-</div>
-
-<div id="today-workout">
-
-<p>No directive loaded yet.</p>
-
-</div>
-
-
-<div class="button-row top-gap">
-
-<button id="prev-workout" class="secondary-btn">
-Previous Directive
-</button>
-
-<button id="next-workout" class="secondary-btn">
-Next Directive
-</button>
-
-</div>
-
-</section>
-
-
-
-<!-- ========================= -->
-<!-- ARCHIVE -->
-<!-- ========================= -->
-
-<section class="card">
-
-<div class="archive-header">
-
-<h2>Forge Archive</h2>
-
-<button id="toggle-archive" class="secondary-btn">
-Expand
-</button>
-
-</div>
-
-<div id="program-output" class="archive-collapsed"></div>
-
-</section>
-
-
-
-<!-- ========================= -->
-<!-- WAR LOG -->
-<!-- ========================= -->
-
-<section class="card">
-
-<h2>War Log</h2>
-
-<form id="daily-log-form">
-
-<input id="log-date" type="date">
-
-<input id="log-bodyweight" type="number" step="0.1" placeholder="Bodyweight">
-
-<input id="log-workout" type="text" placeholder="Directive completed">
-
-<textarea id="log-notes" placeholder="How did it feel?"></textarea>
-
-<button type="submit">
-Save War Log
-</button>
-
-</form>
-
-<div id="log-history"></div>
-
-</section>
-
-
-
-<!-- ========================= -->
-<!-- SCORECARD -->
-<!-- ========================= -->
-
-<section class="card">
-
-<h2>Reforging Record (Final Boss)</h2>
-
-<p class="muted-text">
-Save after Infinity Forge. Top sets become your new numbers.
-</p>
-
-<form id="scorecard-form">
-
-<input id="score-date" type="date">
-
-<input id="score-bodyweight" type="number" step="0.1" placeholder="Bodyweight">
-
-<input id="score-bench-top" type="number" placeholder="Bench Top Set">
-
-<input id="score-sgdl-top" type="number" placeholder="SGDL / Deadlift Top Set">
-
-<input id="score-thruster-load" type="number" placeholder="Thruster Load">
-
-<input id="score-thruster-time" type="text" placeholder="Thruster Time mm:ss">
-
-<input id="score-circuit-rounds" type="number" placeholder="Circuit Rounds">
-
-<textarea id="score-notes" placeholder="Final boss notes"></textarea>
-
-<button type="submit">
-Save Record + Reforge
-</button>
-
-</form>
-
-<div id="scorecard-history"></div>
-
-</section>
-
-
-</main>
-
-
-
-<!-- ========================= -->
-<!-- JAVASCRIPT -->
-<!-- ========================= -->
-
-<script src="./assets/js/storage.js"></script>
-<script src="./assets/js/program.js"></script>
-<script src="./assets/js/scorecard.js"></script>
-<script src="./assets/js/app.js"></script>
-
+  <script src="storage.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

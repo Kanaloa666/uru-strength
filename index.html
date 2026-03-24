@@ -580,6 +580,53 @@
       display: block;
     }
 
+    .timer-panel {
+      position: sticky;
+      top: 10px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid var(--line-2);
+      border-radius: 18px;
+      background: rgba(18, 8, 8, 0.94);
+      box-shadow: var(--shadow);
+    }
+
+    .timer-meta {
+      display: grid;
+      gap: 4px;
+    }
+
+    .timer-time {
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: var(--accent-3);
+    }
+
+    .timer-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      border: 1px solid var(--line-2);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .rest-btn {
+      white-space: nowrap;
+    }
+
     .archive-toggle {
       width: 100%;
       border: 1px solid var(--line-2);
@@ -831,6 +878,19 @@
       </header>
 
       <main class="hud-grid wrap">
+        <section class="timer-panel">
+          <div class="timer-meta">
+            <span class="eyebrow" style="margin:0;">SMART REST</span>
+            <strong id="timer-label">Ready</strong>
+            <span id="timer-time" class="timer-time">00:00</span>
+          </div>
+          <div class="timer-actions">
+            <button id="timer-start-btn" class="btn btn-primary" type="button">Start Rest</button>
+            <button id="timer-plus-btn" class="mini-btn" type="button">+30s</button>
+            <button id="timer-reset-btn" class="mini-btn" type="button">Reset</button>
+            <button id="timer-sound-btn" class="mini-btn" type="button">Sound On</button>
+          </div>
+        </section>
         <section class="panel hero-panel">
           <div class="hero-banner">
             <div class="hero-line">
@@ -885,6 +945,7 @@
                       <th>Target Load</th>
                       <th>Actual</th>
                       <th>Notes</th>
+                      <th>Timer</th>
                     </tr>
                   </thead>
                   <tbody id="paper-table-body"></tbody>
@@ -1643,11 +1704,123 @@
 
         switchOperatorBtn: document.getElementById("switch-operator-btn"),
         editProfileBtn: document.getElementById("edit-profile-btn"),
-        resetOperatorBtn: document.getElementById("reset-operator-btn")
+        resetOperatorBtn: document.getElementById("reset-operator-btn"),
+        timerLabel: document.getElementById("timer-label"),
+        timerTime: document.getElementById("timer-time"),
+        timerStartBtn: document.getElementById("timer-start-btn"),
+        timerPlusBtn: document.getElementById("timer-plus-btn"),
+        timerResetBtn: document.getElementById("timer-reset-btn"),
+        timerSoundBtn: document.getElementById("timer-sound-btn")
       };
 
       let rootData = getRootData();
       let editingOperatorId = "";
+      let timerRemaining = 0;
+      let timerInterval = null;
+      let timerRunning = false;
+      let timerSoundOn = true;
+      let lastRestSeconds = 90;
+      let audioCtx = null;
+
+      function formatTime(totalSeconds) {
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      }
+
+      function updateTimerUI(label = "Ready") {
+        els.timerLabel.textContent = label;
+        els.timerTime.textContent = formatTime(timerRemaining);
+        els.timerSoundBtn.textContent = timerSoundOn ? "Sound On" : "Sound Off";
+        els.timerStartBtn.textContent = timerRunning ? "Running" : "Start Rest";
+      }
+
+      function ensureAudio() {
+        if (!audioCtx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (Ctx) audioCtx = new Ctx();
+        }
+        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+      }
+
+      function beepCountdown() {
+        if (!timerSoundOn) return;
+        ensureAudio();
+        if (!audioCtx) return;
+        const oscillator = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        oscillator.connect(gain);
+        gain.connect(audioCtx.destination);
+        oscillator.type = "sine";
+        oscillator.frequency.value = 880;
+        gain.gain.value = 0.03;
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.12);
+      }
+
+      function restDoneSignal() {
+        if (!timerSoundOn) return;
+        ensureAudio();
+        if (!audioCtx) return;
+        [660, 880, 1040].forEach((freq, idx) => {
+          const oscillator = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          oscillator.connect(gain);
+          gain.connect(audioCtx.destination);
+          oscillator.type = "triangle";
+          oscillator.frequency.value = freq;
+          gain.gain.value = 0.045;
+          const start = audioCtx.currentTime + idx * 0.16;
+          oscillator.start(start);
+          oscillator.stop(start + 0.12);
+        });
+      }
+
+      function stopTimer(reset = false) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        timerRunning = false;
+        if (reset) timerRemaining = 0;
+        updateTimerUI(reset ? "Ready" : els.timerLabel.textContent);
+      }
+
+      function startRestTimer(seconds = lastRestSeconds, label = "Rest") {
+        clearInterval(timerInterval);
+        timerRemaining = seconds;
+        lastRestSeconds = seconds;
+        timerRunning = true;
+        updateTimerUI(label);
+        timerInterval = setInterval(() => {
+          timerRemaining -= 1;
+          if (timerRemaining <= 0) {
+            timerRemaining = 0;
+            stopTimer(false);
+            updateTimerUI("Go Time");
+            restDoneSignal();
+            showStatus("Rest complete. Hit the next set.");
+            return;
+          }
+          if (timerRemaining <= 3) beepCountdown();
+          updateTimerUI(label);
+        }, 1000);
+      }
+
+      function getRestPreset(lift, week) {
+        const name = String(lift.name || "").toLowerCase();
+        const charge = String(lift.charge || "").toLowerCase();
+        if (week === 4) {
+          if (name.includes("carry") || name.includes("curl") || name.includes("face pull") || name.includes("pressdown") || name.includes("dead bug") || name.includes("plank") || name.includes("pallof")) return 45;
+          if (name.includes("landmine") || name.includes("swing")) return 60;
+          return 75;
+        }
+        if (name.includes("bench") || name.includes("deadlift") || name.includes("clean pull") || name.includes("high pull") || name.includes("push press")) return week === 2 ? 120 : 150;
+        if (name.includes("bulgarian") || name.includes("split squat") || name.includes("rdl") || name.includes("landmine squat")) return week === 3 ? 90 : 120;
+        if (name.includes("landmine") || name.includes("swing") || name.includes("carry")) return week === 3 ? 60 : 75;
+        if (name.includes("curl") || name.includes("face pull") || name.includes("pressdown") || name.includes("tricep") || name.includes("lateral raise")) return 45;
+        if (name.includes("dead bug") || name.includes("pallof") || name.includes("plank")) return 45;
+        if (charge.includes("12") || charge.includes("15")) return 60;
+        return 90;
+      }
 
       function showScreen(screenName) {
         Object.values(screens).forEach((screen) => {
@@ -1865,6 +2038,7 @@
               />
             </td>
             <td class="lift-sub">${lift.notes}</td>
+            <td><button class="mini-btn rest-btn" data-rest="${getRestPreset(lift, operator.week)}" data-lift="${escapeHtml(lift.name)}" ${isComplete ? "disabled" : ""}>Rest</button></td>
           `;
 
           const input = tr.querySelector(".actual-input");
@@ -1876,6 +2050,15 @@
             renderMetrics(operator, plan);
             renderArchive(operator);
           });
+
+          const restBtn = tr.querySelector('.rest-btn');
+          if (restBtn) {
+            restBtn.addEventListener('click', () => {
+              const seconds = Number(restBtn.dataset.rest) || 90;
+              const label = `${restBtn.dataset.lift} • Rest`;
+              startRestTimer(seconds, label);
+            });
+          }
 
           els.paperTableBody.appendChild(tr);
         });
@@ -2194,7 +2377,19 @@
       els.runRemaxBtn.addEventListener("click", runRemaxAndAdvanceMonth);
 
       els.archiveToggle.addEventListener("click", toggleArchive);
+      els.timerStartBtn.addEventListener("click", () => startRestTimer(lastRestSeconds, "Manual Rest"));
+      els.timerPlusBtn.addEventListener("click", () => {
+        timerRemaining += 30;
+        lastRestSeconds = Math.max(lastRestSeconds, timerRemaining);
+        updateTimerUI(timerRunning ? els.timerLabel.textContent : "Rest Extended");
+      });
+      els.timerResetBtn.addEventListener("click", () => stopTimer(true));
+      els.timerSoundBtn.addEventListener("click", () => {
+        timerSoundOn = !timerSoundOn;
+        updateTimerUI(timerRunning ? els.timerLabel.textContent : "Ready");
+      });
 
+      updateTimerUI("Ready");
       bootLoadingSequence();
     })();
   </script>

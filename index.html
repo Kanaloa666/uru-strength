@@ -3,52 +3,185 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Omega Forge – Chronovium Engine</title>
+<title>Omega Forge – Chronovium Engine v2</title>
 <style>
 body { font-family: Arial; background:#0a0a0f; color:#e5e7eb; margin:0; }
-.container { padding:16px; }
-.card { background:#111827; padding:16px; margin-bottom:12px; border-radius:12px; }
+.container { padding:16px; max-width:800px; margin:auto; }
+.card { background:#111827; padding:16px; margin-bottom:16px; border-radius:12px; box-shadow:0 0 12px rgba(99,102,241,.2); }
 .title { font-size:20px; font-weight:bold; }
 .sub { opacity:.7; margin-bottom:8px; }
-button { padding:10px 14px; border:none; border-radius:8px; background:#6366f1; color:white; }
+.exercise { margin:6px 0; }
+button { padding:12px 16px; border:none; border-radius:10px; background:#6366f1; color:white; font-weight:bold; }
 </style>
 </head>
 <body>
 <div class="container">
+
 <div class="card">
 <div class="title">OMEGA FORGE</div>
 <div class="sub">Chronovium Engine Active</div>
 <button onclick="generateWorkout()">Generate Directive</button>
 </div>
+
 <div id="output"></div>
+
 </div>
+
 <script>
 
+// ===== USER PROFILE / MAXES =====
+const defaultUsers = [
+  {
+    id: "john",
+    name: "John",
+    benchMax: 265,
+    deadliftMax: 315,
+    landmineBase: 45,
+    kettlebellBase: 35
+  }
+];
+
+const STORAGE_KEY = "omega_forge_users_v1";
+const SELECTED_USER_KEY = "omega_forge_selected_user_v1";
+
+function loadUsers() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultUsers;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length ? parsed : defaultUsers;
+  } catch {
+    return defaultUsers;
+  }
+}
+
+function saveUsers(users) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+}
+
+function loadSelectedUserId(users) {
+  const saved = localStorage.getItem(SELECTED_USER_KEY);
+  if (saved && users.some(u => u.id === saved)) return saved;
+  return users[0].id;
+}
+
+function saveSelectedUserId(id) {
+  localStorage.setItem(SELECTED_USER_KEY, id);
+}
+
+let users = loadUsers();
+let selectedUserId = loadSelectedUserId(users);
+
+function getSelectedUser() {
+  return users.find(u => u.id === selectedUserId) || users[0];
+}
+
+function round5(n) {
+  return Math.round(Number(n || 0) / 5) * 5;
+}
+
+function pct(max, decimal) {
+  return round5(Number(max || 0) * decimal);
+}
+
+function pctWave(max, arr) {
+  return arr.map(v => pct(max, v)).join(" / ");
+}
+
+// ===== ANCHORS (LOCKED IDENTITY) =====
 const anchors = {
   lower: ["Snatch Grip Deadlift","Bulgarian Split Squat"],
-  upper: ["Bench Press","Chest Supported Row"],
-  full: ["Landmine Squat","Carry"]
+  upper: ["Bench Press","Barbell Row"],
+  full: ["Landmine Squat","Farmer Carry"]
 };
 
+// ===== PHASE-SPECIFIC POOLS =====
 const pools = {
-  lower_secondary:["RDL","Reverse Lunge","Goblet Squat","Step Up"],
-  upper_secondary:["Close Grip Bench","Incline DB Press","Lat Pulldown"],
+  lower_secondary: {
+    strength:["Romanian Deadlift","Reverse Lunge"],
+    hypertrophy:["Goblet Squat","Step Up"],
+    power:["Jump Lunge","Broad Jump"]
+  },
+  upper_secondary: {
+    strength:["Close Grip Bench","Barbell Row"],
+    hypertrophy:["Incline DB Press","Lat Pulldown"],
+    power:["Plyo Push Up","Band Press"]
+  },
   landmine:["Landmine Press","Landmine Rotation","Landmine Thruster","Landmine Clean"],
-  kb:["KB Swing","KB Dead Stop Swing","KB Clean","Goblet Squat"],
+  kb:["KB Swing","KB Dead Stop Swing","KB Clean"],
   core:["Dead Bug","Pallof Press","Side Plank","Bear Hold"]
 };
 
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
+// ===== PROGRESSION SCHEMES =====
 function scheme(week){
-  if(week===1) return {type:"paused",sets:"4-5",reps:"4-6"};
-  if(week===2) return {type:"power",sets:"5-8",reps:"3"};
-  if(week===3) return {type:"hypertrophy",sets:"4",reps:"8-12"};
-  return {type:"deload",sets:"3",reps:"5-8"};
+  if(week===1) return {name:"Chrono Lock", main:"5-5-4-4-5 (paused)", assist:"4x8-10", mainPercents:[0.70,0.75,0.80,0.75,0.70]};
+  if(week===2) return {name:"Photon Surge", main:"6x3 (speed)", assist:"3-4x6", mainPercents:[0.60,0.60,0.60,0.60,0.60,0.60]};
+  if(week===3) return {name:"Overload", main:"4x8-12", assist:"4x10", mainPercents:[0.65,0.68,0.70,0.72]};
+  return {name:"Deload", main:"3x5 light", assist:"2-3x8", mainPercents:[0.50,0.55,0.60]};
 }
 
-function buildDay(type,week){
+function getPhaseKey(week){
+  if(week===1) return 'strength';
+  if(week===2) return 'power';
+  if(week===3) return 'hypertrophy';
+  return 'strength';
+}
+
+function getDirectiveNames(week) {
+  if (week === 1) return ["Let the Devil Out", "World Breaker", "Immovable"];
+  if (week === 2) return ["Grav Flip", "Zero Delay", "Warp Strike"];
+  if (week === 3) return ["Pressure Stack", "Arc Reactor", "System Flood"];
+  return ["Neural Cleanse", "System Reboot", "Energy Conservation"];
+}
+
+function mainWeightText(type, week, user) {
   const s = scheme(week);
+  if (type === 'lower') return pctWave(user.deadliftMax, s.mainPercents);
+  if (type === 'upper') return pctWave(user.benchMax, s.mainPercents);
+  if (type === 'full') return String(pct(user.deadliftMax, week === 1 ? 0.65 : week === 2 ? 0.55 : week === 3 ? 0.60 : 0.50));
+  return "";
+}
+
+function anchorBWeightText(type, week, user) {
+  if (type === 'lower') {
+    return week === 1 ? "RPE 7-8 / DB as needed" : week === 2 ? "Moderate DB" : week === 3 ? "Heavy DB" : "Bodyweight / light DB";
+  }
+  if (type === 'upper') {
+    return week === 1 ? "Heavy and clean" : week === 2 ? "Heavy and sharp" : week === 3 ? "Challenging" : "Moderate";
+  }
+  if (type === 'full') {
+    return String(round5(user.kettlebellBase + (week === 1 ? 25 : week === 2 ? 25 : week === 3 ? 20 : 15))) + " lbs";
+  }
+  return "";
+}
+
+function secondaryWeightText(type, secondary, week, user) {
+  if (secondary === "Romanian Deadlift") return `${pct(user.deadliftMax, week === 1 ? 0.60 : 0.55)} lbs`;
+  if (secondary === "Goblet Squat") return `${round5(user.kettlebellBase + 30)} lbs`;
+  if (secondary === "Close Grip Bench") return `${pct(user.benchMax, week === 1 ? 0.65 : 0.70)} lbs`;
+  if (secondary === "Incline DB Press") return "Moderate-heavy DB";
+  if (secondary === "Lat Pulldown") return "Challenging";
+  if (secondary === "Barbell Row") return "Heavy and clean";
+  if (secondary === "Reverse Lunge") return "DB as needed";
+  if (secondary === "Step Up") return "DB as needed";
+  if (secondary === "Jump Lunge" || secondary === "Broad Jump" || secondary === "Plyo Push Up" || secondary === "Band Press") return "Bodyweight / bands";
+  return "As needed";
+}
+
+function landmineWeightText(week, user) {
+  return `${round5(user.landmineBase + (week === 1 ? 20 : week === 2 ? 15 : week === 3 ? 15 : 10))} lbs`;
+}
+
+function kbWeightText(week, user) {
+  return `${round5(user.kettlebellBase + (week === 1 ? 30 : week === 2 ? 30 : week === 3 ? 25 : 15))} lbs`;
+}
+
+// ===== BUILD DAY =====
+function buildDay(type,week,user){
+  const s = scheme(week);
+  const phase = getPhaseKey(week);
 
   let coreA, coreB;
 
@@ -56,37 +189,128 @@ function buildDay(type,week){
     coreA = "Snatch Grip Deadlift";
     coreB = "Bulgarian Split Squat";
   }
+
   if(type==='upper'){
     coreA = "Bench Press";
-    coreB = "Chest Supported Row";
-  }
-  if(type==='full'){
-    coreA = "Landmine Squat";
-    coreB = "Carry";
+    coreB = "Barbell Row";
   }
 
+  if(type==='full'){
+    coreA = "Landmine Squat";
+    coreB = "Farmer Carry";
+  }
+
+  const secondary = pick(type==='lower'?pools.lower_secondary[phase]:pools.upper_secondary[phase]);
+  const landmine = pick(pools.landmine);
+  const kb = pick(pools.kb);
+  const core = pick(pools.core);
+
   return {
+    type,
     coreA,
     coreB,
-    secondary: pick(type==='lower'?pools.lower_secondary:pools.upper_secondary),
-    landmine: pick(pools.landmine),
-    kb: pick(pools.kb),
-    core: pick(pools.core),
-    scheme:s
+    secondary,
+    landmine,
+    kb,
+    core,
+    scheme:s,
+    weights: {
+      coreA: mainWeightText(type, week, user),
+      coreB: anchorBWeightText(type, week, user),
+      secondary: secondaryWeightText(type, secondary, week, user),
+      landmine: landmineWeightText(week, user),
+      kb: kbWeightText(week, user),
+      core: "Bodyweight / band"
+    }
   };
 }
 
-function generateWorkout(){
-  const week = Math.ceil(Math.random()*4);
+function renderUserControls() {
+  const selected = getSelectedUser();
+  const existing = document.getElementById('user-controls');
+  if (existing) existing.remove();
 
-  const lower = buildDay('lower',week);
-  const upper = buildDay('upper',week);
-  const full = buildDay('full',week);
+  const wrap = document.createElement('div');
+  wrap.className = 'card';
+  wrap.id = 'user-controls';
+  wrap.innerHTML = `
+    <div class="title">Operator Profile</div>
+    <div class="sub">Save maxes and generate percentage-based directives</div>
+    <div style="display:grid;grid-template-columns:1fr;gap:10px;">
+      <label>Name<br><input id="user-name" value="${selected.name}" style="width:100%;padding:10px;border-radius:8px;border:none;margin-top:4px;"></label>
+      <label>Bench Max<br><input id="user-bench" type="number" value="${selected.benchMax}" style="width:100%;padding:10px;border-radius:8px;border:none;margin-top:4px;"></label>
+      <label>Deadlift Max<br><input id="user-deadlift" type="number" value="${selected.deadliftMax}" style="width:100%;padding:10px;border-radius:8px;border:none;margin-top:4px;"></label>
+      <label>Landmine Base<br><input id="user-landmine" type="number" value="${selected.landmineBase}" style="width:100%;padding:10px;border-radius:8px;border:none;margin-top:4px;"></label>
+      <label>Kettlebell Base<br><input id="user-kb" type="number" value="${selected.kettlebellBase}" style="width:100%;padding:10px;border-radius:8px;border:none;margin-top:4px;"></label>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button onclick="saveCurrentUser()">Save Operator</button>
+        <button onclick="addUser()">Add Operator</button>
+      </div>
+      <label>Selected Operator<br>
+        <select id="user-select" onchange="changeUser(this.value)" style="width:100%;padding:10px;border-radius:8px;border:none;margin-top:4px;">
+          ${users.map(u => `<option value="${u.id}" ${u.id === selectedUserId ? 'selected' : ''}>${u.name}</option>`).join('')}
+        </select>
+      </label>
+    </div>
+  `;
 
-  render([lower,upper,full],week);
+  const container = document.querySelector('.container');
+  container.insertBefore(wrap, document.getElementById('output'));
 }
 
-function render(days,week){
+function saveCurrentUser() {
+  const selected = getSelectedUser();
+  selected.name = document.getElementById('user-name').value || selected.name;
+  selected.benchMax = Number(document.getElementById('user-bench').value) || selected.benchMax;
+  selected.deadliftMax = Number(document.getElementById('user-deadlift').value) || selected.deadliftMax;
+  selected.landmineBase = Number(document.getElementById('user-landmine').value) || selected.landmineBase;
+  selected.kettlebellBase = Number(document.getElementById('user-kb').value) || selected.kettlebellBase;
+  saveUsers(users);
+  renderUserControls();
+}
+
+function addUser() {
+  const id = `user_${Date.now()}`;
+  const newUser = {
+    id,
+    name: `Operator ${users.length + 1}`,
+    benchMax: 225,
+    deadliftMax: 315,
+    landmineBase: 45,
+    kettlebellBase: 35
+  };
+  users.push(newUser);
+  selectedUserId = id;
+  saveUsers(users);
+  saveSelectedUserId(id);
+  renderUserControls();
+}
+
+function changeUser(id) {
+  selectedUserId = id;
+  saveSelectedUserId(id);
+  renderUserControls();
+}
+
+// ===== GENERATE =====
+function generateWorkout(){
+  const week = Math.ceil(Math.random()*4);
+  const user = getSelectedUser();
+  const names = getDirectiveNames(week);
+
+  const lower = buildDay('lower',week,user);
+  const upper = buildDay('upper',week,user);
+  const full = buildDay('full',week,user);
+
+  render([
+    {...lower, directiveName:names[0]},
+    {...upper, directiveName:names[1]},
+    {...full, directiveName:names[2]}
+  ],week,user);
+}
+
+// ===== RENDER =====
+function render(days,week,user){
   const el = document.getElementById('output');
   el.innerHTML = '';
 
@@ -94,18 +318,32 @@ function render(days,week){
     const card = document.createElement('div');
     card.className='card';
     card.innerHTML = `
-      <div class="title">Day ${i+1}</div>
-      <div class="sub">Week ${week} – ${d.scheme.type}</div>
-      <div><b>${d.coreA}</b></div>
-      <div><b>${d.coreB}</b></div>
-      <div>${d.secondary}</div>
-      <div>${d.landmine}</div>
-      <div>${d.kb}</div>
-      <div>${d.core}</div>
+      <div class="title">${d.directiveName}</div>
+      <div class="sub">${d.scheme.name} • ${user.name}</div>
+
+      <div class="exercise"><b>${d.coreA}</b> – ${d.scheme.main}</div>
+      <div class="exercise">Load: ${d.weights.coreA}</div>
+
+      <div class="exercise"><b>${d.coreB}</b> – ${d.scheme.assist}</div>
+      <div class="exercise">Load: ${d.weights.coreB}</div>
+
+      <div class="exercise"><b>${d.secondary}</b></div>
+      <div class="exercise">Load: ${d.weights.secondary}</div>
+
+      <div class="exercise"><b>${d.landmine}</b></div>
+      <div class="exercise">Load: ${d.weights.landmine}</div>
+
+      <div class="exercise"><b>${d.kb}</b></div>
+      <div class="exercise">Load: ${d.weights.kb}</div>
+
+      <div class="exercise"><b>${d.core}</b></div>
+      <div class="exercise">Load: ${d.weights.core}</div>
     `;
     el.appendChild(card);
   });
 }
+
+renderUserControls();
 
 </script>
 </body>

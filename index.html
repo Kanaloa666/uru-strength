@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Omega Forge — V6</title>
+  <title>Omega Forge — V6.1</title>
   <meta name="theme-color" content="#120606" />
   <style>
     :root {
@@ -67,20 +67,9 @@
     button, input, textarea, select { font: inherit; }
     button { cursor: pointer; }
 
-    .app-shell {
-      width: 100%;
-      min-height: 100vh;
-      padding: 12px;
-    }
-
-    .screen {
-      display: none;
-      min-height: calc(100vh - 24px);
-    }
-
-    .screen.active {
-      display: block;
-    }
+    .app-shell { width: 100%; min-height: 100vh; padding: 12px; }
+    .screen { display: none; min-height: calc(100vh - 24px); }
+    .screen.active { display: block; }
 
     .wrap, .topbar, .hud-grid {
       width: min(var(--maxw), 100%);
@@ -113,10 +102,7 @@
       transition: transform 0.18s ease, opacity 0.18s ease;
     }
 
-    .btn:hover {
-      transform: translateY(-1px);
-      opacity: 0.98;
-    }
+    .btn:hover { transform: translateY(-1px); opacity: 0.98; }
 
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
@@ -298,22 +284,9 @@
       gap: 10px;
     }
 
-    .operator-card h3 {
-      margin: 0;
-      font-size: 1.1rem;
-    }
-
-    .operator-meta {
-      color: var(--muted);
-      font-size: 0.92rem;
-      line-height: 1.4;
-    }
-
-    .operator-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .operator-card h3 { margin: 0; font-size: 1.1rem; }
+    .operator-meta { color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+    .operator-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .form-grid {
       display: grid;
@@ -321,16 +294,8 @@
       gap: 14px;
     }
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .field span {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field span { color: var(--muted); font-size: 0.92rem; }
 
     .field input, .field textarea, .field select {
       width: 100%;
@@ -378,20 +343,9 @@
       margin-bottom: 16px;
     }
 
-    .topbar-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .hud-grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .hero-panel, .sheet-panel, .metrics-panel, .archive-panel {
-      padding: 18px;
-    }
+    .topbar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .hud-grid { display: grid; gap: 16px; }
+    .hero-panel, .sheet-panel, .metrics-panel, .archive-panel { padding: 18px; }
 
     .hero-banner {
       display: grid;
@@ -431,7 +385,8 @@
     .theme-chrono .card,
     .theme-chrono .archive-block,
     .theme-chrono .archive-toggle,
-    .theme-chrono .timer-panel {
+    .theme-chrono .timer-panel,
+    .theme-chrono .modal-card {
       background: rgba(8, 16, 28, 0.88);
     }
 
@@ -478,16 +433,8 @@
       background: rgba(255,255,255,0.02);
     }
 
-    .lift-name {
-      font-weight: 800;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-
-    .lift-sub {
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
+    .lift-name { font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .lift-sub { color: var(--muted); font-size: 0.88rem; }
 
     .actual-input {
       width: 100%;
@@ -580,10 +527,7 @@
     .todo { color: var(--muted); }
 
     .notes-box { display: grid; gap: 12px; }
-    .notes-box textarea {
-      min-height: 150px;
-      resize: vertical;
-    }
+    .notes-box textarea { min-height: 150px; resize: vertical; }
 
     .status-message {
       padding: 12px 14px;
@@ -626,11 +570,7 @@
       color: var(--accent-3);
     }
 
-    .timer-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .timer-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .mini-btn {
       border: 1px solid var(--line-2);
@@ -681,15 +621,8 @@
       background: rgba(255,255,255,0.03);
     }
 
-    .log-item .top {
-      font-weight: 800;
-      margin-bottom: 5px;
-    }
-
-    .log-item .bottom {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
+    .log-item .top { font-weight: 800; margin-bottom: 5px; }
+    .log-item .bottom { color: var(--muted); font-size: 0.92rem; }
 
     .remax-row {
       display: grid;
@@ -698,10 +631,53 @@
       margin-top: 12px;
     }
 
-    .footline {
-      margin-top: 12px;
-      font-size: 0.88rem;
+    .footline { margin-top: 12px; font-size: 0.88rem; color: var(--muted); }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 200;
+    }
+
+    .modal-overlay.show { display: flex; }
+
+    .modal-card {
+      width: min(520px, 100%);
+      background: rgba(18, 8, 8, 0.96);
+      border: 1px solid var(--line-2);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .modal-title {
+      margin: 0 0 8px;
+      font-size: 1.4rem;
+      font-weight: 900;
+    }
+
+    .modal-copy {
+      margin: 0 0 16px;
       color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .modal-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
     }
 
     @keyframes spin {
@@ -739,6 +715,7 @@
       .paper-table { min-width: 760px; }
       .loading-copy h1 { font-size: 2rem; }
       .timer-panel { flex-direction: column; align-items: flex-start; }
+      .modal-actions .btn { width: 100%; }
     }
   </style>
 </head>
@@ -844,6 +821,7 @@
         </div>
 
         <div class="topbar-actions">
+          <button id="arc-switcher-btn" class="btn btn-secondary" type="button">Arc Switcher</button>
           <button id="switch-operator-btn" class="btn btn-secondary" type="button">Switch Operator</button>
           <button id="edit-profile-btn" class="btn btn-secondary" type="button">Edit Numbers</button>
           <button id="reset-operator-btn" class="btn btn-danger" type="button">Reset Operator</button>
@@ -1039,15 +1017,40 @@
         </section>
 
         <p class="footline">
-          Omega Forge V6 active. Month 1 = Mephisto’s Rage. Month 2 = Chronovium.
+          Omega Forge V6.1 active. Month 1 = Mephisto’s Rage. Month 2 = Chronovium.
         </p>
       </main>
     </section>
   </div>
 
+  <div id="arc-modal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-card">
+      <p class="eyebrow">TIME WARP</p>
+      <h3 class="modal-title">Switch Arc</h3>
+      <p class="modal-copy">
+        Choose the campaign arc you want to load. This resets current month notes, actual entries, and directive completion, but keeps your operator profile and maxes.
+      </p>
+
+      <div class="modal-grid">
+        <label class="field">
+          <span>Arc</span>
+          <select id="arc-select">
+            <option value="1">Month 1 — Mephisto’s Rage</option>
+            <option value="2">Month 2 — Chronovium</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button id="arc-modal-cancel" class="btn btn-secondary" type="button">Cancel</button>
+        <button id="arc-modal-confirm" class="btn btn-primary" type="button">Switch Arc</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (() => {
-      const STORAGE_KEY = "omega_forge_v6";
+      const STORAGE_KEY = "omega_forge_v61";
 
       const arcPool = [
         "Mephisto’s Rage",
@@ -1130,7 +1133,9 @@
         operators: {}
       };
 
-      function clone(obj) { return JSON.parse(JSON.stringify(obj)); }
+      function clone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
 
       function getRootData() {
         try {
@@ -1678,12 +1683,19 @@
         switchOperatorBtn: document.getElementById("switch-operator-btn"),
         editProfileBtn: document.getElementById("edit-profile-btn"),
         resetOperatorBtn: document.getElementById("reset-operator-btn"),
+        arcSwitcherBtn: document.getElementById("arc-switcher-btn"),
+
         timerLabel: document.getElementById("timer-label"),
         timerTime: document.getElementById("timer-time"),
         timerStartBtn: document.getElementById("timer-start-btn"),
         timerPlusBtn: document.getElementById("timer-plus-btn"),
         timerResetBtn: document.getElementById("timer-reset-btn"),
-        timerSoundBtn: document.getElementById("timer-sound-btn")
+        timerSoundBtn: document.getElementById("timer-sound-btn"),
+
+        arcModal: document.getElementById("arc-modal"),
+        arcSelect: document.getElementById("arc-select"),
+        arcModalCancel: document.getElementById("arc-modal-cancel"),
+        arcModalConfirm: document.getElementById("arc-modal-confirm")
       };
 
       let rootData = getRootData();
@@ -1891,18 +1903,14 @@
           loadBtn.addEventListener("click", () => {
             rootData.activeOperatorId = operator.id;
             saveRootData();
-            bootLoadingSequence(operator, () => {
-              renderHud();
-            });
+            bootLoadingSequence(operator, () => renderHud());
           });
 
           const editBtn = document.createElement("button");
           editBtn.className = "btn btn-secondary";
           editBtn.type = "button";
           editBtn.textContent = "Edit";
-          editBtn.addEventListener("click", () => {
-            openProfileScreen(operator.id);
-          });
+          editBtn.addEventListener("click", () => openProfileScreen(operator.id));
 
           const deleteBtn = document.createElement("button");
           deleteBtn.className = "btn btn-danger";
@@ -2326,6 +2334,52 @@
         renderHud();
       }
 
+      function openArcModal() {
+        const operator = getCurrentOperator();
+        if (!operator) return;
+        els.arcSelect.value = operator.month >= 2 ? "2" : "1";
+        els.arcModal.classList.add("show");
+        els.arcModal.setAttribute("aria-hidden", "false");
+      }
+
+      function closeArcModal() {
+        els.arcModal.classList.remove("show");
+        els.arcModal.setAttribute("aria-hidden", "true");
+      }
+
+      function confirmArcSwitch() {
+        const operator = getCurrentOperator();
+        if (!operator) return;
+
+        const arcChoice = els.arcSelect.value;
+
+        if (arcChoice === "1") {
+          operator.month = 1;
+          operator.week = 1;
+          operator.workoutIndex = 0;
+          operator.arcName = "Mephisto’s Rage";
+          operator.profile.cycleName = "Month 01 // Mephisto’s Rage";
+        } else {
+          operator.month = 2;
+          operator.week = 1;
+          operator.workoutIndex = 0;
+          operator.arcName = "Chronovium";
+          operator.profile.cycleName = "Month 02 // Chronovium";
+        }
+
+        operator.actualEntries = {};
+        operator.dailyNotes = {};
+        operator.completedDirectives = {};
+        operator.weekBonuses = {};
+
+        setCurrentOperator(operator);
+        closeArcModal();
+        bootLoadingSequence(operator, () => {
+          renderHud();
+          showStatus(`Arc switched to ${operator.month === 1 ? "Mephisto’s Rage" : "Chronovium"}.`);
+        });
+      }
+
       function bootLoadingSequence(operator = null, onComplete = null) {
         const month = operator?.month || 1;
         const week = operator?.week || 1;
@@ -2394,15 +2448,19 @@
       });
 
       els.resetOperatorBtn.addEventListener("click", resetCurrentOperator);
-
       els.prevWeekBtn.addEventListener("click", () => changeWeek(-1));
       els.nextWeekBtn.addEventListener("click", () => changeWeek(1));
-
       els.saveNotesBtn.addEventListener("click", saveDirectiveNotes);
       els.completeDirectiveBtn.addEventListener("click", completeDirective);
       els.runRemaxBtn.addEventListener("click", runRemaxAndAdvanceMonth);
-
       els.archiveToggle.addEventListener("click", toggleArchive);
+
+      els.arcSwitcherBtn.addEventListener("click", openArcModal);
+      els.arcModalCancel.addEventListener("click", closeArcModal);
+      els.arcModalConfirm.addEventListener("click", confirmArcSwitch);
+      els.arcModal.addEventListener("click", (e) => {
+        if (e.target === els.arcModal) closeArcModal();
+      });
 
       els.timerStartBtn.addEventListener("click", () => startRestTimer(lastRestSeconds, "Manual Rest"));
       els.timerPlusBtn.addEventListener("click", () => {
